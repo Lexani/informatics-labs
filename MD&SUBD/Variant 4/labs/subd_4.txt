@@ -1,0 +1,134 @@
+SQL> CREATE TABLE PayBox (ID NUMBER(6) NOT NULL, Cinema_ID VARCHAR2(25), Address VARCHAR2(25), Telephone_number NUMBER(10));
+
+Table created.
+
+SQL> ALTER TABLE Cinema MODIFY (Name VARCHAR2(50));
+
+Table altered.
+
+QL> CREATE TABLE Cinema2 AS SELECT * FROM Cinema
+  2  
+SQL> run
+  1* CREATE TABLE Cinema2 AS SELECT * FROM Cinema
+
+Table created.
+
+SQL> DROP TABLE Cinema;
+
+Table dropped.
+
+SQL> ALTER TABLE Cinema2 RENAME TO Cinema;
+
+Table altered.
+
+SQL> UPDATE Cinema SET Address = 'Undefined address' WHERE Name = 'Pioneer';
+
+1 row updated.
+
+SQL> ALTER TABLE table_name
+  2  add CONSTRAINT constraint_name PRIMARY KEY (column1
+  3  
+SQL> ALTER TABLE PayBox ADD CONSTRAINT ID_PK PRIMARY KEY (ID);
+
+Table altered.
+
+SQL> SELECT * FROM PayBox
+  2  
+SQL> run
+  1* SELECT * FROM PayBox
+
+no rows selected
+
+SQL> DESC PayBox;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ID                                        NOT NULL NUMBER(6)
+ CINEMA_ID                                          VARCHAR2(25)
+ ADDRESS                                            VARCHAR2(25)
+ TELEPHONE_NUMBER                                   NUMBER(10)
+
+SQL> SELECT CONSTRAINT_NAME, CONSTRAINT_TYPE FROM USER_CONSTRAINTS WHERE TABLE_NAME = 'PayBox';
+
+no rows selected
+
+SQL> ALTER TABLE PayBox ADD (PayBoxNumber NUMBER(2));
+
+Table altered.
+
+SQL> SELECT * FROM Cinema;
+
+        ID NAME                                                                 
+---------- --------------------------------------------------                   
+ADDRESS                   TELEPHONE_NUMBER NUMBER_OF_THE_HALL                   
+------------------------- ---------------- ------------------                   
+         1 October                                                              
+av.Fr.Skorini 3                    1111111                  3                   
+                                                                                
+         2 Moscow                                                               
+av.Masherova 24                    2222222                  2                   
+                                                                                
+         3 The House Of The Cinema                                              
+str.Belinskogo 18                  3333333                  2                   
+                                                                                
+
+        ID NAME                                                                 
+---------- --------------------------------------------------                   
+ADDRESS                   TELEPHONE_NUMBER NUMBER_OF_THE_HALL                   
+------------------------- ---------------- ------------------                   
+         4 Central                                                              
+av.Fr.Skorini 58                   4444444                  1                   
+                                                                                
+         5 Pioneer                                                              
+Undefined address                  5555555                  1                   
+                                                                                
+         6 Electron                                                             
+str.Korzhenevskogo 20                                                           
+                                                                                
+
+6 rows selected.
+
+SQL> DELETE FROM Cinema WHERE Number_of_the_hall = 1;
+
+2 rows deleted.
+
+SQL> INSERT INTO PayBox (ID, Address, Telephone_number) SELECT ID, Address, Telephone_number FROM Cinema WHERE ID = 1;
+
+1 row created.
+
+SQL> SELECT * FROM PayBox;
+
+        ID CINEMA_ID                 ADDRESS                   TELEPHONE_NUMBER 
+---------- ------------------------- ------------------------- ---------------- 
+PAYBOXNUMBER                                                                    
+------------                                                                    
+         1                           av.Fr.Skorini 3                    1111111 
+                                                                                
+                                                                                
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> DELETE FROM PayBox WHERE Address = (SELECT Address FROM Cinema WHERE Name = 'October');
+
+1 row deleted.
+
+SQL> SELECT * FROM PayBox;
+
+no rows selected
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> SELECT * FROM PayBox;
+
+        ID CINEMA_ID                 ADDRESS                   TELEPHONE_NUMBER 
+---------- ------------------------- ------------------------- ---------------- 
+PAYBOXNUMBER                                                                    
+------------                                                                    
+         1                           av.Fr.Skorini 3                    1111111 
+                                                                                
+                                                                                
+
+SQL> SPOOL OUT;

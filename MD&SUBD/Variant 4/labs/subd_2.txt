@@ -1,0 +1,325 @@
+SQL> CONN
+Enter user-name: system
+Connected.
+SQL> @ d:\kino
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+SQL> SELECT * FROM Film
+  2  
+SQL> run
+  1* SELECT * FROM Film
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         1 Dead Man                           1995 Drama                        
+1:55:00                  150000000                                              
+                                                                                
+         2 Sin City                           2004 Mystical drama               
+1:57:00                  200000000                                              
+                                                                                
+         3 Im Juli                            2001 Comedy                       
+1:35:00                                                                         
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         4 The Wall                           1992                              
+1:35:00                                                                         
+                                                                                
+         5 The Game                           1990                              
+1:49:00                  205500000                                              
+                                                                                
+         6 Vanila Sky                         1999 Drama                        
+2:14:00                  354250000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         7 Saw                                2000 Thriller                     
+1:50:10                  301900000                                              
+                                                                                
+         8 Ameli                              2002 Melodrama                    
+2:29:05                  367140000                                              
+                                                                                
+         9 Sweet November                     2001 Melodrama                    
+1:40:00                                                                         
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+        10 Fight Club                         2005 Psychological Drama          
+1:41:00                  502750000                                              
+                                                                                
+
+10 rows selected.
+
+SQL> SELECT FilmName, YearOfRelease, Duration FROM Film;
+
+FILMNAME                  YEAROFRELEASE DURATION                                
+------------------------- ------------- --------------------                    
+Dead Man                           1995 1:55:00                                 
+Sin City                           2004 1:57:00                                 
+Im Juli                            2001 1:35:00                                 
+The Wall                           1992 1:35:00                                 
+The Game                           1990 1:49:00                                 
+Vanila Sky                         1999 2:14:00                                 
+Saw                                2000 1:50:10                                 
+Ameli                              2002 2:29:05                                 
+Sweet November                     2001 1:40:00                                 
+Fight Club                         2005 1:41:00                                 
+
+10 rows selected.
+
+SQL> SELECT Price * 5 From Show;
+
+   PRICE*5                                                                      
+----------                                                                      
+        75                                                                      
+                                                                                
+        50                                                                      
+        55                                                                      
+        25                                                                      
+                                                                                
+        40                                                                      
+                                                                                
+        30                                                                      
+                                                                                
+
+10 rows selected.
+
+SQL> SELECT ShowDate AS "Date of the show", ShowTime AS "Time of the show" FROM Show
+  2  
+SQL> run
+  1* SELECT ShowDate AS "Date of the show", ShowTime AS "Time of the show" FROM Show
+
+Date of t Time of the show                                                      
+--------- --------------------                                                  
+02-OCT-05 21:00:00                                                              
+05-SEP-05 22:00:00                                                              
+12-OCT-05 19:00:00                                                              
+23-OCT-05 23:00:00                                                              
+30-SEP-05 18:00:00                                                              
+16-OCT-05 20:00:00                                                              
+10-OCT-05 20:00:00                                                              
+13-SEP-05 18:00:00                                                              
+29-OCT-05 23:00:00                                                              
+01-JAN-06 21:30:00                                                              
+
+10 rows selected.
+
+SQL> SELECT FilmName||', '||YearOfRelease AS "Details" FROM Film;
+
+Details                                                                         
+-------------------------------------------------------------------             
+Dead Man, 1995                                                                  
+Sin City, 2004                                                                  
+Im Juli, 2001                                                                   
+The Wall, 1992                                                                  
+The Game, 1990                                                                  
+Vanila Sky, 1999                                                                
+Saw, 2000                                                                       
+Ameli, 2002                                                                     
+Sweet November, 2001                                                            
+Fight Club, 2005                                                                
+
+10 rows selected.
+
+SQL> SELECT DISTINCT Price FROM Show;
+
+     PRICE                                                                      
+----------                                                                      
+                                                                                
+        11                                                                      
+         6                                                                      
+         5                                                                      
+         8                                                                      
+        15                                                                      
+        10                                                                      
+
+7 rows selected.
+
+SQL> SELECT DISTINCT CashGathering,YearOfRelease FROM Film;
+
+CASHGATHERING YEAROFRELEASE                                                     
+------------- -------------                                                     
+    150000000          1995                                                     
+    200000000          2004                                                     
+                       2001                                                     
+    205500000          1990                                                     
+    354250000          1999                                                     
+    301900000          2000                                                     
+    502750000          2005                                                     
+                       1992                                                     
+    367140000          2002                                                     
+
+9 rows selected.
+
+SQL> SELECT * FROM Film ORDER BY YearOfRelease DESC, CashGathering;
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+        10 Fight Club                         2005 Psychological Drama          
+1:41:00                  502750000                                              
+                                                                                
+         2 Sin City                           2004 Mystical drama               
+1:57:00                  200000000                                              
+                                                                                
+         8 Ameli                              2002 Melodrama                    
+2:29:05                  367140000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         3 Im Juli                            2001 Comedy                       
+1:35:00                                                                         
+                                                                                
+         9 Sweet November                     2001 Melodrama                    
+1:40:00                                                                         
+                                                                                
+         7 Saw                                2000 Thriller                     
+1:50:10                  301900000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         6 Vanila Sky                         1999 Drama                        
+2:14:00                  354250000                                              
+                                                                                
+         1 Dead Man                           1995 Drama                        
+1:55:00                  150000000                                              
+                                                                                
+         4 The Wall                           1992                              
+1:35:00                                                                         
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         5 The Game                           1990                              
+1:49:00                  205500000                                              
+                                                                                
+
+10 rows selected.
+
+SQL> SPOOL OUT

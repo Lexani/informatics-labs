@@ -1,0 +1,177 @@
+SQL> @ d:\kino
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table dropped.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+
+1 row created.
+
+SQL> CREATE TABLE Cinema (ID NUMBER(6) NOT NULL, Name VARCHAR2(25), Address VARCHAR2(25), Telephone_number NUMBER(10), Number_of_the_hall NUMBER(2));
+
+Table created.
+
+SQL> INSERT INTO Cinema VALUES (1, October, av.Fr.Skorini 3, 1111111, 3);
+INSERT INTO Cinema VALUES (1, October, av.Fr.Skorini 3, 1111111, 3)
+                                                     *
+ERROR at line 1:
+ORA-00917: missing comma 
+
+
+SQL> INSERT INTO Cinema VALUES (1, 'October', 'av.Fr.Skorini 3', 1111111, 3);
+
+1 row created.
+
+SQL> INSERT INTO Cinema VALUES (2, 'Moscow', 'av.Masherova 24', 2222222, 2);
+
+1 row created.
+
+SQL> INSERT INTO Cinema VALUES (3, 'The House Of The Cinema', 'str.Belinskogo 18', 3333333, 2);
+
+1 row created.
+
+SQL> INSERT INTO Cinema VALUES (4, 'Central', 'av.Fr.Skorini 58', 4444444, 1);
+
+1 row created.
+
+SQL> INSERT INTO Cinema VALUES (5, 'Pioneer', 'str.Frunze 10', 5555555, 1);
+
+1 row created.
+
+SQL> INSERT INTO Cinema VALUES (6, 'Electron', 'str.Korzhenevskogo 20', NULL, NULL);
+
+1 row created.
+
+SQL> SELECT * FROM Cinema;
+
+        ID NAME                      ADDRESS                   TELEPHONE_NUMBER 
+---------- ------------------------- ------------------------- ---------------- 
+NUMBER_OF_THE_HALL                                                              
+------------------                                                              
+         1 October                   av.Fr.Skorini 3                    1111111 
+                 3                                                              
+                                                                                
+         2 Moscow                    av.Masherova 24                    2222222 
+                 2                                                              
+                                                                                
+         3 The House Of The Cinema   str.Belinskogo 18                  3333333 
+                 2                                                              
+                                                                                
+
+        ID NAME                      ADDRESS                   TELEPHONE_NUMBER 
+---------- ------------------------- ------------------------- ---------------- 
+NUMBER_OF_THE_HALL                                                              
+------------------                                                              
+         4 Central                   av.Fr.Skorini 58                   4444444 
+                 1                                                              
+                                                                                
+         5 Pioneer                   str.Frunze 10                      5555555 
+                 1                                                              
+                                                                                
+         6 Electron                  str.Korzhenevskogo 20                      
+                                                                                
+                                                                                
+
+6 rows selected.
+
+SQL> SPOOL OUT

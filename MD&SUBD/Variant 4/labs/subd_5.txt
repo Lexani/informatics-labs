@@ -1,0 +1,275 @@
+SQL> SELECT * FROM Film WHERE YearOfRelease BETWEEN 1994 AND 2002;
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         1 Dead Man                           1995 Drama                        
+1:55:00                  150000000                                              
+                                                                                
+         3 Im Juli                            2001 Comedy                       
+1:35:00                                                                         
+                                                                                
+         6 Vanila Sky                         1999 Drama                        
+2:14:00                  354250000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         7 Saw                                2000 Thriller                     
+1:50:10                  301900000                                              
+                                                                                
+         8 Ameli                              2002 Melodrama                    
+2:29:05                  367140000                                              
+                                                                                
+         9 Sweet November                     2001 Melodrama                    
+1:40:00                                                                         
+                                                                                
+
+6 rows selected.
+
+SQL> SELECT * FROM Film WHERE FilmGenre = 'Thriller' OR FilmGenre = 'Comedy';
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         3 Im Juli                            2001 Comedy                       
+1:35:00                                                                         
+                                                                                
+         7 Saw                                2000 Thriller                     
+1:50:10                  301900000                                              
+                                                                                
+
+SQL> SELECT * FROM Film WHERE REGEXP_LIKE (FilmName, '(e|a)');
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         1 Dead Man                           1995 Drama                        
+1:55:00                  150000000                                              
+                                                                                
+         4 The Wall                           1992                              
+1:35:00                                                                         
+                                                                                
+         5 The Game                           1990                              
+1:49:00                  205500000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         6 Vanila Sky                         1999 Drama                        
+2:14:00                  354250000                                              
+                                                                                
+         7 Saw                                2000 Thriller                     
+1:50:10                  301900000                                              
+                                                                                
+         8 Ameli                              2002 Melodrama                    
+2:29:05                  367140000                                              
+                                                                                
+
+        ID FILMNAME                  YEAROFRELEASE FILMGENRE                    
+---------- ------------------------- ------------- --------------------         
+DURATION             CASHGATHERING                                              
+-------------------- -------------                                              
+         9 Sweet November                     2001 Melodrama                    
+1:40:00                                                                         
+                                                                                
+
+7 rows selected.
+
+SQL> SELECT * FROM Ticket WHERE Place > 20 AND Row1 <= 10;
+
+        ID       ROW1      PLACE CASHDEPARTMENT    SHOW_ID                      
+---------- ---------- ---------- -------------- ----------                      
+         4          4         25              1          4                      
+         9          5         33              1          3                      
+
+SQL> SELECT Show.ShowDate, Film.FilmName FROM Show, Film;
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+02-OCT-05 Dead Man                                                              
+02-OCT-05 Sin City                                                              
+02-OCT-05 Im Juli                                                               
+02-OCT-05 The Wall                                                              
+02-OCT-05 The Game                                                              
+02-OCT-05 Vanila Sky                                                            
+02-OCT-05 Saw                                                                   
+02-OCT-05 Ameli                                                                 
+02-OCT-05 Sweet November                                                        
+02-OCT-05 Fight Club                                                            
+05-SEP-05 Dead Man                                                              
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+05-SEP-05 Sin City                                                              
+05-SEP-05 Im Juli                                                               
+05-SEP-05 The Wall                                                              
+05-SEP-05 The Game                                                              
+05-SEP-05 Vanila Sky                                                            
+05-SEP-05 Saw                                                                   
+05-SEP-05 Ameli                                                                 
+05-SEP-05 Sweet November                                                        
+05-SEP-05 Fight Club                                                            
+12-OCT-05 Dead Man                                                              
+12-OCT-05 Sin City                                                              
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+12-OCT-05 Im Juli                                                               
+12-OCT-05 The Wall                                                              
+12-OCT-05 The Game                                                              
+12-OCT-05 Vanila Sky                                                            
+12-OCT-05 Saw                                                                   
+12-OCT-05 Ameli                                                                 
+12-OCT-05 Sweet November                                                        
+12-OCT-05 Fight Club                                                            
+23-OCT-05 Dead Man                                                              
+23-OCT-05 Sin City                                                              
+23-OCT-05 Im Juli                                                               
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+23-OCT-05 The Wall                                                              
+23-OCT-05 The Game                                                              
+23-OCT-05 Vanila Sky                                                            
+23-OCT-05 Saw                                                                   
+23-OCT-05 Ameli                                                                 
+23-OCT-05 Sweet November                                                        
+23-OCT-05 Fight Club                                                            
+30-SEP-05 Dead Man                                                              
+30-SEP-05 Sin City                                                              
+30-SEP-05 Im Juli                                                               
+30-SEP-05 The Wall                                                              
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+30-SEP-05 The Game                                                              
+30-SEP-05 Vanila Sky                                                            
+30-SEP-05 Saw                                                                   
+30-SEP-05 Ameli                                                                 
+30-SEP-05 Sweet November                                                        
+30-SEP-05 Fight Club                                                            
+16-OCT-05 Dead Man                                                              
+16-OCT-05 Sin City                                                              
+16-OCT-05 Im Juli                                                               
+16-OCT-05 The Wall                                                              
+16-OCT-05 The Game                                                              
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+16-OCT-05 Vanila Sky                                                            
+16-OCT-05 Saw                                                                   
+16-OCT-05 Ameli                                                                 
+16-OCT-05 Sweet November                                                        
+16-OCT-05 Fight Club                                                            
+10-OCT-05 Dead Man                                                              
+10-OCT-05 Sin City                                                              
+10-OCT-05 Im Juli                                                               
+10-OCT-05 The Wall                                                              
+10-OCT-05 The Game                                                              
+10-OCT-05 Vanila Sky                                                            
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+10-OCT-05 Saw                                                                   
+10-OCT-05 Ameli                                                                 
+10-OCT-05 Sweet November                                                        
+10-OCT-05 Fight Club                                                            
+13-SEP-05 Dead Man                                                              
+13-SEP-05 Sin City                                                              
+13-SEP-05 Im Juli                                                               
+13-SEP-05 The Wall                                                              
+13-SEP-05 The Game                                                              
+13-SEP-05 Vanila Sky                                                            
+13-SEP-05 Saw                                                                   
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+13-SEP-05 Ameli                                                                 
+13-SEP-05 Sweet November                                                        
+13-SEP-05 Fight Club                                                            
+29-OCT-05 Dead Man                                                              
+29-OCT-05 Sin City                                                              
+29-OCT-05 Im Juli                                                               
+29-OCT-05 The Wall                                                              
+29-OCT-05 The Game                                                              
+29-OCT-05 Vanila Sky                                                            
+29-OCT-05 Saw                                                                   
+29-OCT-05 Ameli                                                                 
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+29-OCT-05 Sweet November                                                        
+29-OCT-05 Fight Club                                                            
+01-JAN-06 Dead Man                                                              
+01-JAN-06 Sin City                                                              
+01-JAN-06 Im Juli                                                               
+01-JAN-06 The Wall                                                              
+01-JAN-06 The Game                                                              
+01-JAN-06 Vanila Sky                                                            
+01-JAN-06 Saw                                                                   
+01-JAN-06 Ameli                                                                 
+01-JAN-06 Sweet November                                                        
+
+SHOWDATE  FILMNAME                                                              
+--------- -------------------------                                             
+01-JAN-06 Fight Club                                                            
+
+100 rows selected.
+
+SQL> SELECT Show.ID, Show.ShowDate, Show.ShowTime, Film.FilmName From Show JOIN Film ON Show.Film_ID = Film.ID ORDER BY Show.ShowDate;
+
+        ID SHOWDATE  SHOWTIME             FILMNAME                              
+---------- --------- -------------------- -------------------------             
+         2 05-SEP-05 22:00:00             Sin City                              
+         8 13-SEP-05 18:00:00             Ameli                                 
+         5 30-SEP-05 18:00:00             The Game                              
+         1 02-OCT-05 21:00:00             The Wall                              
+         7 10-OCT-05 20:00:00             Sin City                              
+         3 12-OCT-05 19:00:00             Im Juli                               
+         6 16-OCT-05 20:00:00             Vanila Sky                            
+         4 23-OCT-05 23:00:00             The Wall                              
+         9 29-OCT-05 23:00:00             Fight Club                            
+        10 01-JAN-06 21:30:00             Saw                                   
+
+10 rows selected.
+
+SQL> SELECT Show.ID, Film.FilmName FROM Show JOIN Film ON Show.Film_ID = Film.ID;
+
+        ID FILMNAME                                                             
+---------- -------------------------                                            
+         7 Sin City                                                             
+         2 Sin City                                                             
+         3 Im Juli                                                              
+         4 The Wall                                                             
+         1 The Wall                                                             
+         5 The Game                                                             
+         6 Vanila Sky                                                           
+        10 Saw                                                                  
+         8 Ameli                                                                
+         9 Fight Club                                                           
+
+10 rows selected.
+
+SQL> SELECT Show.ID, Show.ShowDate, Show.ShowTime, Film.FilmName From Show JOIN Film ON Show.Film_ID = Film.ID AND Show.ShowTime BETWEEN '20:00:00' AND '23:00:00' ORDER BY Show.ShowDate;
+
+        ID SHOWDATE  SHOWTIME             FILMNAME                              
+---------- --------- -------------------- -------------------------             
+         2 05-SEP-05 22:00:00             Sin City                              
+         1 02-OCT-05 21:00:00             The Wall                              
+         7 10-OCT-05 20:00:00             Sin City                              
+         6 16-OCT-05 20:00:00             Vanila Sky                            
+         4 23-OCT-05 23:00:00             The Wall                              
+         9 29-OCT-05 23:00:00             Fight Club                            
+        10 01-JAN-06 21:30:00             Saw                                   
+
+7 rows selected.
+
+SQL> SPOOL OUT;
