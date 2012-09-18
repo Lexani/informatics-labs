@@ -1,9 +1,20 @@
 package lab.itirod;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.Writer;
 import java.util.List;
 
-public abstract class AbstractListMatrix {
-    private int rows, columns;
+public abstract class AbstractListMatrix implements Serializable {
+    private static final long serialVersionUID = -2519877101288117927L;
+    protected int rows, columns;
     protected List<List<Double>> data;
 
     public int getRows() {
@@ -103,6 +114,53 @@ public abstract class AbstractListMatrix {
                 if (i != j && get(i, j) != 0.0)
                     return false;
         return true;
+    }
+
+    public void writeToFile(String fileName) throws IOException {
+        Writer writer = new FileWriter(fileName);
+        writer.write(String.valueOf(rows) + "\n");
+        writer.write(String.valueOf(columns) + "\n");
+        for (int i = 0; i < rows; i++) {
+            StringBuilder st = new StringBuilder();
+            List<Double> row = getRow(i);
+            for (int j = 0; j < columns; j++)
+                st.append(row.get(j)).append(" ");
+            writer.write(st.append("\n").toString());
+        }
+        writer.close();
+    }
+
+    public void readFromFile(String fileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        int row = Integer.parseInt(reader.readLine());
+        int col = Integer.parseInt(reader.readLine());
+        init(row, col);
+        for (int i = 0; i < row; i++) {
+            String data = reader.readLine();
+            String[] numbers = data.split(" ");
+            for (int j = 0; j < numbers.length; j++) {
+                Double value = Double.parseDouble(numbers[j]);
+                set(value, i, j);
+            }
+        }
+        reader.close();
+    }
+
+    public void serializeToFile(String fileName) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream(fileName);
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(this);
+        out.close();
+        fileOut.close();
+    }
+
+    public AbstractListMatrix deserializeFromFile(String fileName) throws IOException, ClassNotFoundException {
+        FileInputStream fileIn = new FileInputStream(fileName);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        AbstractListMatrix result = (AbstractListMatrix) in.readObject();
+        in.close();
+        fileIn.close();
+        return result;
     }
 
 }

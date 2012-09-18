@@ -14,6 +14,10 @@ public class MatrixTest {
         multOnesArrayTest();
         multOnesLinkedTest();
         performanceTest();
+        writeFile();
+        readFile();
+        serialize();
+        deserialize();
     }
 
     private static void multZerosArrayTest() {
@@ -149,6 +153,62 @@ public class MatrixTest {
                     + " ms");
             System.out.println("LinkedList implementation time = " + linkedTime
                     + " ms");
+        } catch (Exception e) {
+            System.out.println("Test failed. Exception occured.");
+        }
+    }
+
+    private static void writeFile() {
+        try {
+            System.out.println("Writing to file");
+            String fileName = "/home/mikalaj/testmatrix";
+            int size = 4;
+            ArrayListMatrix m1 = new ArrayListMatrix(size, size);
+            for (int i = 0; i < size; i++)
+                m1.set(1.0, i, i);
+            m1.writeToFile(fileName);
+        } catch (Exception e) {
+            System.out.println("Test failed. Exception occured.");
+        }
+    }
+
+    private static void readFile() {
+        try {
+            System.out.println("Reading from file");
+            String fileName = "/home/mikalaj/testmatrix";
+            int size = 2;
+            ArrayListMatrix m1 = new ArrayListMatrix(size, size);
+            m1.readFromFile(fileName);
+        } catch (Exception e) {
+            System.out.println("Test failed. Exception occured.");
+        }
+    }
+    
+    private static void serialize() {
+        try {
+            System.out.println("Serializing");
+            String fileName = "/home/mikalaj/testmatrix";
+            int size = 4;
+            ArrayListMatrix m1 = new ArrayListMatrix(size, size);
+            for (int i = 0; i < size; i++)
+                m1.set(1.0, i, i);
+            m1.serializeToFile(fileName);
+        } catch (Exception e) {
+            System.out.println("Test failed. Exception occured.");
+        }
+    }
+
+    private static void deserialize() {
+        try {
+            System.out.println("Deserializing");
+            String fileName = "/home/mikalaj/testmatrix";
+            int size = 2;
+            ArrayListMatrix m1 = new ArrayListMatrix(size, size);
+            AbstractListMatrix m2 = m1.deserializeFromFile(fileName);
+            if (m2.isOne())
+                System.out.println("TEST SUCCEED.");
+            else
+                System.out.println("TEST FAILED.");
         } catch (Exception e) {
             System.out.println("Test failed. Exception occured.");
         }

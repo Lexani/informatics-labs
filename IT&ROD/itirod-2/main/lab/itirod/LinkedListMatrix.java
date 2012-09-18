@@ -5,12 +5,16 @@ import java.util.List;
 
 public class LinkedListMatrix extends AbstractListMatrix{
 
+    private static final long serialVersionUID = -2017709725864982874L;
+
     public LinkedListMatrix(int rows, int columns) {
         super(rows, columns);
     }
 
     @Override
     protected void init(int rows, int columns) {
+        this.rows = rows;
+        this.columns = columns;
         data = new LinkedList<List<Double>>();
         for (int i = 0; i < rows; i++) {
             LinkedList<Double> column = new LinkedList<Double>();

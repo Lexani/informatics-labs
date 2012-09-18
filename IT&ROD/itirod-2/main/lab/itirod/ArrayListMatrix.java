@@ -5,12 +5,16 @@ import java.util.List;
 
 public class ArrayListMatrix extends AbstractListMatrix{
 
+    private static final long serialVersionUID = -3435291043188023238L;
+
     public ArrayListMatrix(int rows, int columns) {
         super(rows, columns);
     }
 
     @Override
     protected void init(int rows, int columns) {
+        this.rows = rows;
+        this.columns = columns;
         data = new ArrayList<List<Double>>(rows);
         for (int i = 0; i < rows; i++) {
             data.add(new ArrayList<Double>(columns));
