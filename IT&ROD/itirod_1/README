@@ -1,0 +1,9 @@
+This is first lab.
+Here you can find the example of building jar from classes in two
+separate packages. 
+
+To run lab on linux just launch
+sh build.sh
+
+On windows you should replace commands for deleting file for appropriate analogues
+and remame file to build.bat This should build executable jar for you.
