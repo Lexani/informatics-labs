@@ -1,0 +1,294 @@
+Model started at 1348089568605 ms
+Manager Daemon started: 1348089568608
+Manager does his work
+# Added: 
+Request
+Customer: Customer16 Cash: 1450
+Account: Account2 Cash: 3842
+Sum: -643
+#
+Queue size: 0
+# Added: 
+Request
+Customer: Customer13 Cash: 1450
+Account: Account3 Cash: 3842
+Sum: 1078
+#
+Queue size: 0
+# Added: 
+Request
+Customer: Customer8 Cash: 1450
+Account: Account4 Cash: 3842
+Sum: -495
+#
+Queue size: 0
+# Added: 
+Request
+Customer: Customer26 Cash: 1450
+Account: Account3 Cash: 4920
+Sum: -1120
+#
+Queue size: 1
+# Added: 
+Request
+Customer: Customer14 Cash: 1450
+Account: Account0 Cash: 3842
+Sum: 1109
+#
+Queue size: 2
+# Added: 
+Request
+Customer: Customer27 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: -411
+#
+Queue size: 3
+# Added: 
+Request
+Customer: Customer28 Cash: 1450
+Account: Account3 Cash: 4920
+Sum: -132
+#
+Queue size: 4
+# Added: 
+Request
+Customer: Customer11 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: 551
+#
+Queue size: 5
+# Added: 
+Request
+Customer: Customer29 Cash: 1450
+Account: Account8 Cash: 3842
+Sum: -40
+#
+Queue size: 6
+# Added: 
+Request
+Customer: Customer1 Cash: 1450
+Account: Account1 Cash: 3842
+Sum: 208
+#
+Queue size: 7
+# Added: 
+Request
+Customer: Customer0 Cash: 1450
+Account: Account7 Cash: 3842
+Sum: 554
+#
+Queue size: 8
+# Added: 
+Request
+Customer: Customer5 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: -661
+#
+Queue size: 9
+# Added: 
+Request
+Customer: Customer2 Cash: 1450
+Account: Account4 Cash: 4337
+Sum: -336
+#
+Queue size: 10
+# Added: 
+Request
+Customer: Customer3 Cash: 1450
+Account: Account1 Cash: 3842
+Sum: 1319
+#
+Queue size: 11
+# Added: 
+Request
+Customer: Customer18 Cash: 1450
+Account: Account1 Cash: 3842
+Sum: -755
+#
+Queue size: 12
+# Added: 
+Request
+Customer: Customer10 Cash: 1450
+Account: Account4 Cash: 4337
+Sum: -67
+#
+Queue size: 13
+# Added: 
+Request
+Customer: Customer19 Cash: 1450
+Account: Account1 Cash: 3842
+Sum: 739
+#
+Queue size: 14
+# Added: 
+Request
+Customer: Customer6 Cash: 1450
+Account: Account6 Cash: 3842
+Sum: 898
+#
+Queue size: 15
+# Added: 
+Request
+Customer: Customer21 Cash: 1450
+Account: Account4 Cash: 4337
+Sum: 660
+#
+Queue size: 16
+# Added: 
+Request
+Customer: Customer15 Cash: 1450
+Account: Account8 Cash: 3842
+Sum: -497
+#
+Queue size: 17
+# Added: 
+Request
+Customer: Customer22 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: 1267
+#
+Queue size: 18
+# Added: 
+Request
+Customer: Customer4 Cash: 1450
+Account: Account6 Cash: 3842
+Sum: 44
+#
+Queue size: 19
+# Added: 
+Request
+Customer: Customer20 Cash: 1450
+Account: Account4 Cash: 4337
+Sum: 1147
+#
+Queue size: 20
+# Added: 
+Request
+Customer: Customer23 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: 1027
+#
+Queue size: 21
+# Added: 
+Request
+Customer: Customer24 Cash: 1450
+Account: Account4 Cash: 4337
+Sum: 996
+#
+Queue size: 22
+# Added: 
+Request
+Customer: Customer12 Cash: 1450
+Account: Account0 Cash: 3842
+Sum: -254
+#
+Queue size: 23
+# Added: 
+Request
+Customer: Customer25 Cash: 1450
+Account: Account8 Cash: 3842
+Sum: 839
+#
+Queue size: 24
+# Added: 
+Request
+Customer: Customer9 Cash: 1450
+Account: Account1 Cash: 3842
+Sum: 908
+#
+Queue size: 25
+# Added: 
+Request
+Customer: Customer7 Cash: 1450
+Account: Account5 Cash: 3842
+Sum: 881
+#
+Queue size: 26
+# Added: 
+Request
+Customer: Customer17 Cash: 1450
+Account: Account2 Cash: 4485
+Sum: 204
+#
+Queue size: 27
+Manager does his work
+# Processed: 
+Request
+Customer: Customer13 Cash: 372
+Account: Account3 Cash: 4920
+Sum: 1078
+#
+# Processed: 
+Request
+Customer: Customer16 Cash: 807
+Account: Account2 Cash: 4485
+Sum: -643
+#
+# Added: 
+Request
+Customer: Customer16 Cash: 807
+Account: Account5 Cash: 3842
+Sum: 649
+#
+Queue size: 26
+# Processed: 
+Request
+Customer: Customer8 Cash: 955
+Account: Account4 Cash: 4337
+Sum: -495
+#
+# Added: 
+Request
+Customer: Customer13 Cash: 372
+Account: Account6 Cash: 3842
+Sum: 474
+#
+Queue size: 26
+# Added: 
+Request
+Customer: Customer8 Cash: 955
+Account: Account5 Cash: 4253
+Sum: 28
+#
+Queue size: 27
+Manager does his work
+Manager does his work
+# Processed: 
+Request
+Customer: Customer26 Cash: 330
+Account: Account3 Cash: 6040
+Sum: -1120
+#
+# Processed: 
+Request
+Customer: Customer14 Cash: 341
+Account: Account0 Cash: 4951
+Sum: 1109
+#
+# Added: 
+Request
+Customer: Customer26 Cash: 330
+Account: Account7 Cash: 3842
+Sum: -1063
+#
+Queue size: 26
+# Added: 
+Request
+Customer: Customer14 Cash: 341
+Account: Account6 Cash: 3842
+Sum: -426
+#
+Queue size: 27
+# Processed: 
+Request
+Customer: Customer27 Cash: 1039
+Account: Account5 Cash: 4804
+Sum: -411
+#
+# Added: 
+Request
+Customer: Customer27 Cash: 1039
+Account: Account6 Cash: 3842
+Sum: 790
+#
+Queue size: 27
