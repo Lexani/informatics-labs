@@ -1,0 +1,24 @@
+ArrayListMatrices mul.
+0x0 mul. result: true
+1x1 mul. result: true
+1x0 mul. result: true
+LinkedListMatrices mul.
+0x0 mul. result: true
+1x1 mul. result: true
+1x0 mul. result: true
+ArrayList Freq. Mul. Test
+Matrix Multiplication 100 x 100 took 48 ms
+LinkedList Freq. Mul. Test
+Matrix Multiplication 100 x 100 took 287 ms
+ArrayListMatrices mul.
+0x0 mul. result: true
+1x1 mul. result: true
+1x0 mul. result: true
+LinkedListMatrices mul.
+0x0 mul. result: true
+1x1 mul. result: true
+1x0 mul. result: true
+ArrayList Freq. Mul. Test
+Matrix Multiplication 100 x 100 took 88 ms
+LinkedList Freq. Mul. Test
+Matrix Multiplication 100 x 100 took 345 ms

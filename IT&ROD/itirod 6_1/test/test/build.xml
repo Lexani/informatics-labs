@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="itirod_7" default="build">
+	<target name="init">
+		<delete dir="./bin" failonerror="false" />
+		<delete dir="./reports" failonerror="false" />
+		<mkdir dir="./bin" />
+		<mkdir dir="./bin/class" />
+		<mkdir dir="./bin/test" />
+		<mkdir dir="./reports" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac classpath=".;junit-4.10.jar" srcdir="." destdir="./bin/class" />
+		<javac classpath=".;junit-4.10.jar" srcdir="." destdir="./bin/test" />
+	</target>
+
+	<target name="test" depends="compile">
+		<junit printsummary="yes" haltonerror="yes" haltonfailure="yes" showoutput="yes" fork="yes">
+			<formatter type="xmlw" />
+			<classpath>
+				<pathelement path="." />
+				<pathelement path="./junit-4.10.jar" />
+				<pathelement path="./bin/class" />
+				<pathelement path="./bin/test" />
+			</classpath>
+			<test name="MatrixIOTest" haltonfailure="yes" todir="./reports">
+				<formatter type="xml" />
+			</test>
+		</junit>
+		<junitreport todir="./reports">
+			<fileset dir="./reports">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="./reports" />
+		</junitreport>
+	</target>
+
+	<target name="build" depends="test">
+		<jar destfile="./bin/assembly.jar" basedir="./bin/class" />
+	</target>
+</project>

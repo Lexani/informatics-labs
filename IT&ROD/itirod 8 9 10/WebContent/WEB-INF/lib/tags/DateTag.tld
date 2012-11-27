@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jsee/web-jsptagLibrary_2_0.xsd"
+	version="2.0">
+	<tlibversion>1.0</tlibversion>
+	<info>A simple date tag</info>
+
+	<tag>
+		<name>displayDate</name>
+		<tagclass>students.webapi.tags.DateTag</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>Display Date</info>
+	</tag>
+</taglib>

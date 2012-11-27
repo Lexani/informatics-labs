@@ -1,0 +1,113 @@
+Model started at 1348326284782 ms
+# Added: 
+Request
+Customer: Customer2 Cash: 1309
+Account: Account2 Cash: 2669
+Sum: -653
+#
+Queue size: 0
+# Added: 
+Request
+Customer: Customer6 Cash: 1309
+Account: Account5 Cash: 2669
+Sum: 720
+#
+Manager Daemon started: 1348326284791
+Manager does his work:
+Start cash: 27795 now: 27795
+Audit check result: false
+Queue size: 0
+# Added: 
+Request
+Customer: Customer5 Cash: 1309
+Account: Account2 Cash: 3322
+Sum: 193
+#
+Queue size: 0
+# Added: 
+Request
+Customer: Customer7 Cash: 1309
+Account: Account1 Cash: 2669
+Sum: -717
+#
+Queue size: 1
+# Added: 
+Request
+Customer: Customer0 Cash: 1309
+Account: Account1 Cash: 2669
+Sum: 668
+#
+Queue size: 2
+# Added: 
+Request
+Customer: Customer3 Cash: 1309
+Account: Account4 Cash: 2669
+Sum: 388
+#
+Queue size: 3
+# Added: 
+Request
+Customer: Customer8 Cash: 1309
+Account: Account0 Cash: 2669
+Sum: -68
+#
+Queue size: 4
+# Added: 
+Request
+Customer: Customer1 Cash: 1309
+Account: Account0 Cash: 2669
+Sum: 885
+#
+Queue size: 5
+# Added: 
+Request
+Customer: Customer4 Cash: 1309
+Account: Account2 Cash: 3515
+Sum: -1081
+#
+Queue size: 6
+Manager does his work:
+Start cash: 27795 now: 27795
+Audit check result: false
+# Processed: 
+Request
+Customer: Customer2 Cash: 656
+Account: Account2 Cash: 3515
+Sum: -653
+#
+# Added: 
+Request
+Customer: Customer2 Cash: 656
+Account: Account3 Cash: 2669
+Sum: 154
+#
+Queue size: 6
+# Processed: 
+Request
+Customer: Customer6 Cash: 589
+Account: Account5 Cash: 3389
+Sum: 720
+#
+# Added: 
+Request
+Customer: Customer6 Cash: 589
+Account: Account1 Cash: 4054
+Sum: -893
+#
+Queue size: 6
+# Processed: 
+Request
+Customer: Customer5 Cash: 1116
+Account: Account2 Cash: 3515
+Sum: 193
+#
+# Added: 
+Request
+Customer: Customer5 Cash: 1116
+Account: Account4 Cash: 3057
+Sum: -155
+#
+Queue size: 6
+Manager does his work:
+Start cash: 27795 now: 27795
+Audit check result: false

@@ -1,0 +1,30 @@
+Filter destroyed
+Filter destroyed
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+Filter destroyed
+Filter destroyed
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+Filter destroyed
+Filter destroyed
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+Filter destroyed
+Filter destroyed
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+doFilter
+doFilter
+doFilter
+doFilter
+doFilter
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+doFilter
+Filter destroyed
+Filter destroyed
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.EditRequestFilter, filterClass=students.webapi.filters.EditRequestFilter]
+Filter initialized: ApplicationFilterConfig[name=students.webapi.filters.AllRequestFilter, filterClass=students.webapi.filters.AllRequestFilter]
