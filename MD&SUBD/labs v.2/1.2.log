@@ -1,0 +1,252 @@
+SQL> connect dmitry@xe
+Connected.
+SQL> SELECT * FROM STUDENT ORDER BY STUDENT_LAST_NM, STUDENT_FIRST_NM DESC;
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         5                                                                      
+Aziz                                                                            
+Abel                                                                            
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         1                                                                      
+Cynthia                                                                         
+Bailey                                                                          
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         4                                                                      
+Iris                                                                            
+Jones                                                                           
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         6                                                                      
+Maria                                                                           
+Lai                                                                             
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         7                                                                      
+Robert                                                                          
+Larue                                                                           
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         9                                                                      
+Daniel                                                                          
+McCarthy                                                                        
+DanielMMcCarthy@teleworm.us                                                     
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         2                                                                      
+Ricardo                                                                         
+Metcalfe                                                                        
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         3                                                                      
+Marcin                                                                          
+Ostrowski                                                                       
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+        10                                                                      
+Cynthia                                                                         
+Riley                                                                           
+                                                                                
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+         8                                                                      
+William                                                                         
+Thomas                                                                          
+4092 Maxwell Farm Road Arlington, VA 22201                                      
+                                                                                
+
+10 rows selected.
+
+SQL> SELECT STUDENT_ID, STUDENT_FIRST_NM FROM STUDENT;
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+         1                                                                      
+Cynthia                                                                         
+                                                                                
+         2                                                                      
+Ricardo                                                                         
+                                                                                
+         3                                                                      
+Marcin                                                                          
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+         4                                                                      
+Iris                                                                            
+                                                                                
+         5                                                                      
+Aziz                                                                            
+                                                                                
+         6                                                                      
+Maria                                                                           
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+         7                                                                      
+Robert                                                                          
+                                                                                
+         8                                                                      
+William                                                                         
+                                                                                
+         9                                                                      
+Daniel                                                                          
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+        10                                                                      
+Cynthia                                                                         
+                                                                                
+
+10 rows selected.
+ 
+SQL> SELECT ATTEMPT_ID, GRADE, GRADE * 1.1 AS "110% GRADE" FROM STUDENT_ATTEMPT;
+
+ATTEMPT_ID      GRADE 110% GRADE                                                
+---------- ---------- ----------                                                
+         1                                                                      
+         2                                                                      
+         3                                                                      
+         4                                                                      
+         5                                                                      
+         6                                                                      
+         7                                                                      
+         8                                                                      
+         9         10         11                                                
+        10                                                                      
+        11         50         55                                                
+
+ATTEMPT_ID      GRADE 110% GRADE                                                
+---------- ---------- ----------                                                
+        12                                                                      
+        13         90         99                                                
+        14                                                                      
+        15         10         11                                                
+        16                                                                      
+
+16 rows selected.
+
+SQL> SELECT DISTINCT SEMESTER_NM FROM SEMESTER;
+
+SEMESTER_NM                                                                     
+--------------------------------------------------------------------------------
+Spring                                                                          
+Autumn                                                                          
+
+SQL> SELECT 'Course '||course_title||' is under id '||course_id AS "Courses" FROM course;
+
+Courses                                                                         
+--------------------------------------------------------------------------------
+Course Data Analysis is under id 1                                              
+Course Design and Analysis of Algorithms is under id 2                          
+Course Cryptography is under id 3                                               
+Course Human-Computer Interaction is under id 4                                 
+Course Compilers is under id 5                                                  
+Course Introduction to Logic is under id 6                                      
+Course Machine Learning is under id 7                                           
+Course Natural Language Processing is under id 8                                
+Course Game Theory is under id 9                                                
+Course Probabilistic Graphical Models is under id 10                            
+Course Automata is under id 11                                                  
+
+11 rows selected.
+
+SQL> spool off

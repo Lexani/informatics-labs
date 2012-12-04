@@ -1,0 +1,43 @@
+SQL> CREATE TABLE mystudent AS SELECT * FROM student;
+
+Table created.
+
+SQL> SELECT COUNT(*) FROM user_tables WHERE table_name = 'MYSTUDENT';
+
+  COUNT(*)                                                                      
+----------                                                                      
+         1  
+
+SQL> ALTER TABLE mystudent ADD upd_dt DATE default TO_DATE('15 November 1991');
+
+Table altered.
+
+SQL> ALTER TABLE mystudent MODIFY (upd_dt CONSTRAINT upd_nn NOT NULL);
+
+Table altered.
+
+SQL> select constraint_name from user_constraints where table_name = 'MYSTUDENT';
+
+CONSTRAINT_NAME                                                                 
+------------------------------                                                  
+SYS_C007487                                                                     
+UPD_NN
+
+SQL> ALTER TABLE mystudent RENAME COLUMN student_other_details TO detailes;
+
+Table altered.
+
+SQL> DESC mystudent
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ STUDENT_ID                                NOT NULL NUMBER(38)
+ STUDENT_FIRST_NM                                   VARCHAR2(100)
+ STUDENT_LAST_NM                                    VARCHAR2(100)
+ DETAILES                                           VARCHAR2(200)
+ UPD_DT                                    NOT NULL DATE
+
+SQL> DROP TABLE mystudent;
+
+Table dropped.
+
+SQL> spool off

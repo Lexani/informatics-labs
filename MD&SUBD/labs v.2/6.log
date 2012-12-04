@@ -1,0 +1,876 @@
+SQL> -- 6.1
+SQL> SELECT *
+  2  FROM
+  3  (
+  4  	SELECT rownum rn, sa.*
+  5  	FROM student_attempt sa
+  6  )
+  7  pages
+  8  WHERE rownum between 5 and 10;
+
+no rows selected
+
+SQL> SELECT *
+  2  FROM
+  3  (
+  4  	SELECT rownum rn, sa.*
+  5  	FROM student_attempt sa
+  6  ) pages
+  7  WHERE pages.rn between 5 and 10;
+
+        RN ATTEMPT_ID STUDENT_ID    EXAM_ID SEMESTER_ID EXAM_DT_ID      GRADE   
+---------- ---------- ---------- ---------- ----------- ---------- ----------   
+RESULT_CATEGORY_ID                                                              
+------------------                                                              
+         5          5          3          1           1        300              
+                 1                                                              
+                                                                                
+         6          6          3          1           1        301              
+                 1                                                              
+                                                                                
+         7          7          3          1           1        302              
+                 2                                                              
+                                                                                
+
+        RN ATTEMPT_ID STUDENT_ID    EXAM_ID SEMESTER_ID EXAM_DT_ID      GRADE   
+---------- ---------- ---------- ---------- ----------- ---------- ----------   
+RESULT_CATEGORY_ID                                                              
+------------------                                                              
+         8          8          2          1           1        318              
+                 3                                                              
+                                                                                
+         9          9          3          2           2         73         10   
+                                                                                
+                                                                                
+        10         10          4          3           3        641              
+                 2                                                              
+                                                                                
+
+6 rows selected.
+
+SQL> SELECT *
+  2  FROM
+  3  (
+  4  	SELECT rownum rn, sa.*
+  5  	FROM student_attempt sa
+  6  ) pages
+  7  WHERE pages.rn between 6 and 10;
+
+        RN ATTEMPT_ID STUDENT_ID    EXAM_ID SEMESTER_ID EXAM_DT_ID      GRADE   
+---------- ---------- ---------- ---------- ----------- ---------- ----------   
+RESULT_CATEGORY_ID                                                              
+------------------                                                              
+         6          6          3          1           1        301              
+                 1                                                              
+                                                                                
+         7          7          3          1           1        302              
+                 2                                                              
+                                                                                
+         8          8          2          1           1        318              
+                 3                                                              
+                                                                                
+
+        RN ATTEMPT_ID STUDENT_ID    EXAM_ID SEMESTER_ID EXAM_DT_ID      GRADE   
+---------- ---------- ---------- ---------- ----------- ---------- ----------   
+RESULT_CATEGORY_ID                                                              
+------------------                                                              
+         9          9          3          2           2         73         10   
+                                                                                
+                                                                                
+        10         10          4          3           3        641              
+                 2                                                              
+                                                                                
+
+SQL> -- 6.2
+SQL> desc course
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ COURSE_ID                                 NOT NULL NUMBER(38)
+ COURSE_TITLE                                       VARCHAR2(100)
+
+SQL> ALTER TABLE course ADD prnt_id NUMBER(38);
+
+Table altered.
+
+SQL> desc course
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ COURSE_ID                                 NOT NULL NUMBER(38)
+ COURSE_TITLE                                       VARCHAR2(100)
+ PRNT_ID                                            NUMBER(38)
+
+SQL> select * from course
+  2  /
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+         1                                                                      
+Data Analysis                                                                   
+                                                                                
+                                                                                
+         2                                                                      
+Design and Analysis of Algorithms                                               
+                                                                                
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+                                                                                
+         3                                                                      
+Cryptography                                                                    
+                                                                                
+                                                                                
+         4                                                                      
+Human-Computer Interaction                                                      
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+                                                                                
+                                                                                
+         5                                                                      
+Compilers                                                                       
+                                                                                
+                                                                                
+         6                                                                      
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+Introduction to Logic                                                           
+                                                                                
+                                                                                
+         7                                                                      
+Machine Learning                                                                
+                                                                                
+                                                                                
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+         8                                                                      
+Natural Language Processing                                                     
+                                                                                
+                                                                                
+         9                                                                      
+Game Theory                                                                     
+                                                                                
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+                                                                                
+        10                                                                      
+Probabilistic Graphical Models                                                  
+                                                                                
+                                                                                
+        11                                                                      
+Automata                                                                        
+
+ COURSE_ID                                                                      
+----------                                                                      
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+   PRNT_ID                                                                      
+----------                                                                      
+                                                                                
+                                                                                
+
+11 rows selected.
+
+SQL> select course_title, course_id, nvl(prnt_id, NULL) from course;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(PRNT_ID,NULL)                                                    
+---------- -----------------                                                    
+Data Analysis                                                                   
+         1                                                                      
+                                                                                
+Design and Analysis of Algorithms                                               
+         2                                                                      
+                                                                                
+Cryptography                                                                    
+         3                                                                      
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(PRNT_ID,NULL)                                                    
+---------- -----------------                                                    
+Human-Computer Interaction                                                      
+         4                                                                      
+                                                                                
+Compilers                                                                       
+         5                                                                      
+                                                                                
+Introduction to Logic                                                           
+         6                                                                      
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(PRNT_ID,NULL)                                                    
+---------- -----------------                                                    
+Machine Learning                                                                
+         7                                                                      
+                                                                                
+Natural Language Processing                                                     
+         8                                                                      
+                                                                                
+Game Theory                                                                     
+         9                                                                      
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(PRNT_ID,NULL)                                                    
+---------- -----------------                                                    
+Probabilistic Graphical Models                                                  
+        10                                                                      
+                                                                                
+Automata                                                                        
+        11                                                                      
+                                                                                
+
+11 rows selected.
+
+SQL> select course_title, course_id, nvl(to_char(prnt_id), 'NULL') from course;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Data Analysis                                                                   
+         1 NULL                                                                 
+                                                                                
+Design and Analysis of Algorithms                                               
+         2 NULL                                                                 
+                                                                                
+Cryptography                                                                    
+         3 NULL                                                                 
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Human-Computer Interaction                                                      
+         4 NULL                                                                 
+                                                                                
+Compilers                                                                       
+         5 NULL                                                                 
+                                                                                
+Introduction to Logic                                                           
+         6 NULL                                                                 
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Machine Learning                                                                
+         7 NULL                                                                 
+                                                                                
+Natural Language Processing                                                     
+         8 NULL                                                                 
+                                                                                
+Game Theory                                                                     
+         9 NULL                                                                 
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Probabilistic Graphical Models                                                  
+        10 NULL                                                                 
+                                                                                
+Automata                                                                        
+        11 NULL                                                                 
+                                                                                
+
+11 rows selected.
+
+SQL> UPDATE course SET prnt_id = 6 WHERE course_id = 2;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 1 WHERE course_id = 3;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 2 WHERE course_id = 5;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 11 WHERE course_id = 7;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 2 WHERE course_id = 9;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 9 WHERE course_id = 10;
+
+1 row updated.
+
+SQL> UPDATE course SET prnt_id = 2 WHERE course_id = 11;
+
+1 row updated.
+
+SQL> select course_title, course_id, nvl(to_char(prnt_id), 'NULL') from course;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Data Analysis                                                                   
+         1 NULL                                                                 
+                                                                                
+Design and Analysis of Algorithms                                               
+         2 6                                                                    
+                                                                                
+Cryptography                                                                    
+         3 1                                                                    
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Human-Computer Interaction                                                      
+         4 NULL                                                                 
+                                                                                
+Compilers                                                                       
+         5 2                                                                    
+                                                                                
+Introduction to Logic                                                           
+         6 NULL                                                                 
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Machine Learning                                                                
+         7 11                                                                   
+                                                                                
+Natural Language Processing                                                     
+         8 NULL                                                                 
+                                                                                
+Game Theory                                                                     
+         9 2                                                                    
+                                                                                
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+ COURSE_ID NVL(TO_CHAR(PRNT_ID),'NULL')                                         
+---------- ----------------------------------------                             
+Probabilistic Graphical Models                                                  
+        10 9                                                                    
+                                                                                
+Automata                                                                        
+        11 2                                                                    
+                                                                                
+
+11 rows selected.
+
+SQL> SET SERVEROUTPUT ON;
+SQL> -- 6.2a
+SQL> CREATE OR REPLACE FUNCTION Out_tree
+  2  	(cid IN number, lvl IN varchar2)
+  3  	RETURN varchar2
+  4  IS
+  5  	CURSOR c IS
+  6  	(
+  7  		SELECT * FROM course WHERE course_id = cid
+  8  	);
+  9  	c_rec course%ROWTYPE;
+ 10  
+ 11  BEGIN
+ 12  	OPEN c;
+ 13  	FETCH c INTO c_rec;
+ 14  	DBMS_OUTPUT.PUT_LINE(lvl||c_rec.course_title);
+ 15  	CLOSE c;
+ 16  	FOR c_rec IN
+ 17  	(
+ 18  		SELECT * FROM course WHERE prnt_id = cid
+ 19  	)
+ 20  	LOOP
+ 21  		IF c_rec.course_id IS NOT NULL THEN
+ 22  			DBMS_OUTPUT.PUT_LINE(Out_tree(c_rec.course_id, lvl||'....'));
+ 23  		END IF;
+ 24  	END LOOP;
+ 25  	RETURN '';
+ 26  END;
+ 27  /
+
+Function created.
+
+SQL> -- 6.2b
+SQL> CREATE OR REPLACE FUNCTION Out_path
+  2  	(cid IN number)
+  3  	RETURN varchar2
+  4  IS
+  5  	CURSOR c IS
+  6  	(
+  7  		SELECT * FROM course WHERE course_id = cid
+  8  	);
+  9  	c_rec course%ROWTYPE;
+ 10  
+ 11  BEGIN
+ 12  	OPEN c;
+ 13  	FETCH c INTO c_rec;
+ 14  	CLOSE c;
+ 15  	IF c_rec.prnt_id IS NULL THEN
+ 16  		RETURN c_rec.course_title;
+ 17  	ELSE
+ 18  		RETURN Out_path(c_rec.prnt_id)||'/'||c_rec.course_title;
+ 19  	END IF;
+ 20  END;
+ 21  /
+
+Function created.
+
+SQL> 
+SQL> -- 6.2c
+SQL> CREATE OR REPLACE FUNCTION Out_path_reversed
+  2  	(cid IN number)
+  3  	RETURN varchar2
+  4  IS
+  5  	CURSOR c IS
+  6  	(
+  7  		SELECT * FROM course WHERE course_id = cid
+  8  	);
+  9  	c_rec course%ROWTYPE;
+ 10  
+ 11  BEGIN
+ 12  	OPEN c;
+ 13  	FETCH c INTO c_rec;
+ 14  	CLOSE c;
+ 15  	IF c_rec.prnt_id IS NULL THEN
+ 16  		RETURN c_rec.course_title;
+ 17  	ELSE
+ 18  		RETURN c_rec.course_title||'/'||Out_path_reversed(c_rec.prnt_id);
+ 19  	END IF;
+ 20  END;
+ 21  /
+
+Function created.
+
+SQL> BEGIN
+  2  	FOR c IN
+  3  	(
+  4  		SELECT course_id, course_title, prnt_id, level
+  5  		FROM course
+  6  		CONNECT BY PRIOR course_id = prnt_id
+  7  		START WITH prnt_id IS NULL
+  8  		ORDER BY 1
+  9  	)
+ 10  	LOOP
+ 11  		-- 6.2a
+ 12  		IF c.level = 1 THEN
+ 13  			DBMS_OUTPUT.PUT_LINE(Out_tree(c.course_id, ''));
+ 14  		END IF;
+ 15  	END LOOP;
+ 16  END;
+ 17  /
+Data Analysis                                                                   
+....Cryptography                                                                
+Human-Computer Interaction                                                      
+Introduction to Logic                                                           
+....Design and Analysis of Algorithms                                           
+........Compilers                                                               
+........Game Theory                                                             
+............Probabilistic Graphical Models                                      
+........Automata                                                                
+............Machine Learning                                                    
+Natural Language Processing                                                     
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2  	FOR c IN
+  3  	(
+  4  		SELECT course_id, course_title, prnt_id, level
+  5  		FROM course
+  6  		CONNECT BY PRIOR course_id = prnt_id
+  7  		START WITH prnt_id IS NULL
+  8  		ORDER BY 1
+  9  	)
+ 10  	LOOP
+ 11  		DBMS_OUTPUT.PUT_LINE(Out_path(c.course_id));
+ 12  	END LOOP;
+ 13  END;
+ 14  /
+Data Analysis                                                                   
+Introduction to Logic/Design and Analysis of Algorithms                         
+Data Analysis/Cryptography                                                      
+Human-Computer Interaction                                                      
+Introduction to Logic/Design and Analysis of Algorithms/Compilers               
+Introduction to Logic                                                           
+Introduction to Logic/Design and Analysis of Algorithms/Automata/Machine        
+Learning                                                                        
+Natural Language Processing                                                     
+Introduction to Logic/Design and Analysis of Algorithms/Game Theory             
+Introduction to Logic/Design and Analysis of Algorithms/Game                    
+Theory/Probabilistic Graphical Models                                           
+Introduction to Logic/Design and Analysis of Algorithms/Automata                
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2  	FOR c IN
+  3  	(
+  4  		SELECT course_id, course_title, prnt_id, level
+  5  		FROM course
+  6  		CONNECT BY PRIOR course_id = prnt_id
+  7  		START WITH prnt_id IS NULL
+  8  		ORDER BY 1
+  9  	)
+ 10  	LOOP
+ 11  		DBMS_OUTPUT.PUT_LINE(Out_path_reversed(c.course_id));
+ 12  	END LOOP;
+ 13  END;
+ 14  /
+Data Analysis                                                                   
+Design and Analysis of Algorithms/Introduction to Logic                         
+Cryptography/Data Analysis                                                      
+Human-Computer Interaction                                                      
+Compilers/Design and Analysis of Algorithms/Introduction to Logic               
+Introduction to Logic                                                           
+Machine Learning/Automata/Design and Analysis of Algorithms/Introduction to     
+Logic                                                                           
+Natural Language Processing                                                     
+Game Theory/Design and Analysis of Algorithms/Introduction to Logic             
+Probabilistic Graphical Models/Game Theory/Design and Analysis of               
+Algorithms/Introduction to Logic                                                
+Automata/Design and Analysis of Algorithms/Introduction to Logic                
+
+PL/SQL procedure successfully completed.
+
+SQL> -- 6.3
+SQL> CREATE OR REPLACE FUNCTION Show_dept_students
+  2   (department_id IN number)
+  3   RETURN varchar2
+  4  IS
+  5   ret_list varchar2(256);
+  6  
+  7  BEGIN
+  8   FOR s IN
+  9   (
+ 10     SELECT * FROM student WHERE dept_id = department_id
+ 11   )
+ 12   LOOP
+ 13     IF ret_list <> '' THEN
+ 14       ret_list := ret_list||', ';
+ 15     END IF;
+ 16     ret_list := ret_list||s.student_first_nm||' '||s.student_last_nm||'; ';
+ 17   END LOOP;
+ 18   RETURN ret_list;
+ 19  END;
+ 20  /
+
+Function created.
+
+SQL> 
+SQL> BEGIN
+  2   FOR c IN
+  3   (
+  4     SELECT DISTINCT dept_id
+  5     FROM student
+  6     ORDER BY 1
+  7   )
+  8   LOOP
+  9     DBMS_OUTPUT.PUT_LINE(c.dept_id||' '||Show_dept_students(c.dept_id));
+ 10   END LOOP;
+ 11  END;
+ 12  /
+1 Cynthia Bailey; Aziz Abel; Maria Lai;                                         
+2 Ricardo Metcalfe; Marcin Ostrowski; Iris Jones; Robert Larue;                 
+3 William Thomas; Daniel McCarthy; Cynthia Riley;                               
+
+PL/SQL procedure successfully completed.
+
+SQL> -- 6.4
+SQL> CREATE OR REPLACE PROCEDURE BuildStudentExamsTable
+  2  AS
+  3   str varchar2(1024);
+  4   cnt number(3) := '';
+  5  
+  6  BEGIN
+  7   FOR c0 IN
+  8   (
+  9     SELECT course_id FROM course
+ 10   )
+ 11   LOOP
+ 12     str := str||lpad(to_char(c0.course_id), 4);
+ 13   END LOOP;
+ 14   DBMS_OUTPUT.PUT_LINE(rpad('Student', 20)||str);
+ 15   DBMS_OUTPUT.PUT_LINE(rpad('_', 20, '_'));
+ 16  
+ 17   FOR s IN
+ 18   (
+ 19     SELECT * FROM student
+ 20   )
+ 21   LOOP
+ 22     str := rpad(s.student_first_nm||' '||s.student_last_nm, 20);
+ 23     FOR c IN
+ 24     (
+ 25       SELECT course_id FROM course
+ 26     )
+ 27     LOOP
+ 28       SELECT count(*) INTO cnt FROM student_attempt sa WHERE sa.student_id = s.student_id AND sa.exam_id = c.course_id;
+ 29       str := str||lpad(to_char(cnt), 4);
+ 30     END LOOP;
+ 31     DBMS_OUTPUT.PUT_LINE(str);
+ 32   END LOOP;
+ 33  END;
+ 34  /
+
+Procedure created.
+
+SQL> 
+SQL> BEGIN
+  2   BuildStudentExamsTable;
+  3  END;
+  4  /
+Student                1   2   3   4   5   6   7   8   9  10  11                
+____________________                                                            
+Cynthia Bailey         3   0   0   0   0   0   0   0   0   0   0                
+Ricardo Metcalfe       1   0   0   0   0   0   0   0   0   0   0                
+Marcin Ostrowski       3   1   0   0   0   0   0   0   0   0   0                
+Iris Jones             0   0   1   0   0   0   0   0   0   0   0                
+Aziz Abel              0   0   0   1   0   0   0   0   0   0   0                
+Maria Lai              0   0   0   0   1   0   0   0   0   0   0                
+Robert Larue           0   0   0   0   0   1   0   0   0   0   0                
+William Thomas         0   0   0   0   0   0   1   0   0   0   0                
+Daniel McCarthy        0   0   0   0   0   0   0   1   1   0   0                
+Cynthia Riley          1   0   0   0   0   0   0   0   0   0   0                
+Test                   0   0   0   0   0   0   0   0   0   0   0                
+
+PL/SQL procedure successfully completed.
+
+SQL> -- 6.5 (source)
+-- INSERT INTO step_prgrs(step_prgrs_id, step_id, stts)
+-- VALUES(11, 1, 'COMPLETED');
+-- INSERT INTO step_prgrs(step_prgrs_id, step_id, stts)
+-- VALUES(12, 2, 'COMPLETED');
+-- INSERT INTO step_prgrs(step_prgrs_id, step_id, stts)
+-- VALUES(13, 3, 'COMPLETED');
+-- INSERT INTO step_prgrs(step_prgrs_id, step_id, stts)
+-- VALUES(14, 4, 'BLOCKED');
+
+-- INSERT INTO step_result(step_result_id, step_prgrs_id, param_nm, param_vle)
+-- VALUES(5, 11, 'client', 'MORGAN');
+-- INSERT INTO step_result(step_result_id, step_prgrs_id, param_nm, param_vle)
+-- VALUES(6, 12, 'type', 'BUY');
+
+CREATE OR REPLACE PROCEDURE StartMaster
+AS
+  max_id number(38);
+
+BEGIN
+  SELECT nvl(max(step_prgrs_id), 0) INTO max_id FROM step_prgrs;
+  INSERT INTO step_prgrs (step_prgrs_id, step_id, stts) VALUES (max_id + 1, 1, 'COMPLETED');
+END;
+/
+
+CREATE OR REPLACE PROCEDURE InsertProgressStep
+  (sid IN step.step_id%TYPE, new_stts IN step_prgrs.stts%TYPE)
+AS
+  max_id number(38);
+
+BEGIN
+  SELECT nvl(max(step_prgrs_id), 0) INTO max_id FROM step_prgrs;
+  INSERT INTO step_prgrs (step_prgrs_id, step_id, stts) VALUES (max_id + 1, sid, new_stts);
+  COMMIT;
+END;
+/
+
+CREATE OR REPLACE FUNCTION FindPairInResult
+  (progr_start_id IN step_prgrs.step_prgrs_id%TYPE, par_nm IN step_result.param_nm%TYPE, par_val IN step_result.param_vle%TYPE)
+RETURN number
+IS
+  cnt integer(3);
+BEGIN
+  SELECT count(*) INTO cnt FROM step_result sr
+  WHERE sr.param_nm = par_nm AND sr.param_vle = par_val;
+  IF cnt > 0 THEN
+    RETURN 1;
+  ELSE
+    RETURN 0;
+  END IF;
+END;
+/
+
+CREATE OR REPLACE FUNCTION FindPairInPrereq
+  (step_id IN step.step_id%TYPE, par_nm IN step_prereq.param_nm%TYPE)
+RETURN number
+IS
+  cnt integer(3);
+BEGIN
+  SELECT count(*) INTO cnt FROM step_result sr WHERE sr.param_nm = par_nm;  
+  -- DBMS_OUTPUT.PUT_LINE('Prerequisite search: ('||par_nm||'); found:'||cnt);
+  IF cnt > 0 THEN
+    RETURN 1;
+  ELSE
+    RETURN 0;
+  END IF;
+END;
+/
+
+CREATE OR REPLACE FUNCTION CheckChildPrerequisites
+  (child IN step%ROWTYPE)
+RETURN number
+IS
+  param_number integer(3);      -- number of needed params
+  param_number_matched integer(3);  -- number of matched prerequisites
+  ret_flag integer(1);
+  tmp_val integer(3);
+BEGIN
+  -- DBMS_OUTPUT.PUT_LINE('Prerequisites for step#'||child.step_id||':');
+  SELECT count(step_id) INTO param_number FROM step_prereq WHERE step_id = child.step_id;
+  -- DBMS_OUTPUT.PUT_LINE('Prerequisites to match: '||param_number);
+  IF param_number > 0 THEN
+    param_number_matched := 0;
+    FOR s_par IN
+    (
+      SELECT * FROM step_prereq WHERE step_id = child.step_id
+    )
+    LOOP
+      tmp_val := FindPairInPrereq(child.step_id, s_par.param_nm);
+
+      IF tmp_val = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Warning: prerequisite ('||s_par.param_nm||') not found');
+      END IF;
+      param_number_matched := param_number_matched + tmp_val;
+    END LOOP;
+
+    IF param_number <> param_number_matched THEN
+      ret_flag := 0;
+    ELSE
+      ret_flag := 1;
+    END IF;
+  ELSE
+    ret_flag := 1;
+  END IF;
+
+  RETURN ret_flag;
+END;
+/
+
+CREATE OR REPLACE FUNCTION CheckChildCondition
+  (child IN step%ROWTYPE)
+RETURN number
+IS
+  cnd_number integer(3);          -- number of needed conditions
+  cnd_number_matched integer(3);      -- number of matched conditions
+  ret_flag integer(1);          -- return value - true or false
+  tmp_val integer(3);
+BEGIN
+  -- count conditions
+  SELECT count(param_nm) INTO cnd_number FROM step_cntdn WHERE step_id = child.step_id;
+  DBMS_OUTPUT.PUT_LINE('Conditions dependencies found: '||cnd_number);
+  -- if cnd_number > 0 then filter, else return 1
+  IF cnd_number > 0 THEN
+    cnd_number_matched := 0;
+    FOR s_cnd IN
+    (
+      SELECT param_nm, param_vle
+      FROM step_cntdn
+      WHERE step_id = child.step_id
+    )
+    LOOP
+      tmp_val := FindPairInResult(0, s_cnd.param_nm, s_cnd.param_vle);
+      IF tmp_val = 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Warning: condition ('||s_cnd.param_nm||'='||s_cnd.param_vle||') not matched for step#'||child.step_id);
+      END IF;
+      cnd_number_matched := cnd_number_matched + tmp_val;
+    END LOOP;
+
+    IF cnd_number <> cnd_number_matched THEN
+      DBMS_OUTPUT.PUT_LINE('Conditions NOT matched, step#'||child.step_id);
+      RETURN 0;
+    ELSE
+      DBMS_OUTPUT.PUT_LINE('Conditions matched, step#'||child.step_id);
+      RETURN 1; 
+    END IF;
+  ELSE
+    DBMS_OUTPUT.PUT_LINE('Conditions matched, step#'||child.step_id);
+    RETURN 1;
+  END IF;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE NextStepProc
+  (st_pr_id IN step_prgrs.step_prgrs_id%TYPE)
+AS
+  curr_step_id step.step_id%TYPE;   -- current progress
+  flag integer(1);  -- flag shows if child matches conditions
+  ret_step varchar2(1000);  -- child step which matches condition
+  step_status varchar2(32); -- 'COMPLETED', 'BLOCKED'
+  sel_child_step_id step.step_id%TYPE;
+BEGIN
+  -- Add record to the progress table with 'IN PROGRESS' status
+  step_status := 'BLOCKED';
+  SELECT step_id INTO curr_step_id FROM step_prgrs WHERE step_prgrs_id = st_pr_id;
+  -- Loop all child steps
+  FOR s IN
+  (
+    SELECT * FROM step WHERE prnt_step_id = curr_step_id
+  )
+  LOOP
+    -- Check conditions
+    flag := CheckChildCondition(s);
+    IF flag = 1 THEN
+      -- Check prerequsites
+      flag := CheckChildPrerequisites(s);
+      IF flag = 1 THEN
+        -- Change status to 'COMPLETED'
+        ret_step := 'ID:'||s.step_id||'; NAME:'||s.step_short_nm||'; DESC:'||s.step_desc;
+        step_status := 'COMPLETED';
+      END IF;
+
+      InsertProgressStep(s.step_id, step_status);
+
+      IF step_status = 'COMPLETED' THEN       
+        EXIT;
+      END IF;
+    END IF;
+  END LOOP;
+
+  DBMS_OUTPUT.PUT_LINE('NEXT STEP: '||nvl(ret_step, 'BLOCKED'));
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN DBMS_OUTPUT.PUT_LINE('Possibly step_prgrs table is not filled');
+END;
+/
+
+DECLARE
+  current_progress_id step.step_id%TYPE;
+BEGIN
+  NextStepProc(&current_progress_id);
+END;
+/
+

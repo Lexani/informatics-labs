@@ -1,0 +1,325 @@
+--  3.1
+SQL> SELECT * FROM student WHERE student_first_nm = 'Li' AND student_last_nm = 'Tai';
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+        54                                                                      
+Li                                                                              
+Tai                                                                             
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+                                                                                
+          271-14-9646                                                           
+                                                                                
+
+--  3.2
+SQL> SELECT * FROM student WHERE student_first_nm = 'Cynthia' OR student_first_nm = 'William';
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+         1                                                                      
+Cynthia                                                                         
+Bailey                                                                          
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+                                                                                
+15-NOV-91 N/A                                                                   
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+        10                                                                      
+Cynthia                                                                         
+Riley                                                                           
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+                                                                                
+15-NOV-91 N/A                                                                   
+                                                                                
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+         8                                                                      
+William                                                                         
+Thomas                                                                          
+
+STUDENT_ID                                                                      
+----------                                                                      
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+4092 Maxwell Farm Road Arlington, VA 22201                                      
+15-NOV-91 ssn default                                                           
+                                                                                
+
+SQL> DESC CALENDAR
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ DAY_ID                                    NOT NULL NUMBER(38)
+ DT                                        NOT NULL DATE
+ DAY_OF_MONTH                              NOT NULL NUMBER(38)
+ MONTH_OF_YEAR                             NOT NULL NUMBER(38)
+ YEAR_NUM                                  NOT NULL NUMBER(38)
+
+
+SQL> DESC course
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ COURSE_ID                                 NOT NULL NUMBER(38)
+ COURSE_TITLE                                       VARCHAR2(100)
+
+--  3.4
+SQL> SELECT course_title FROM course WHERE INSTR(course_title, 'om') > 0;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+Human-Computer Interaction                                                      
+Compilers                                                                       
+Automata                                                                        
+
+SQL> DESC exam
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EXAM_ID                                   NOT NULL NUMBER(38)
+ COURSE_ID                                 NOT NULL NUMBER(38)
+ GRADE_TYPE                                NOT NULL CHAR(1)
+
+--  3.5
+SQL> SELECT * FROM exam WHERE course_id = (SELECT course_id FROM course WHERE course_title = 'Machine Learning');
+
+   EXAM_ID  COURSE_ID G                                                         
+---------- ---------- -                                                         
+         7          7 N                                                         
+
+SQL> desc exam
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EXAM_ID                                   NOT NULL NUMBER(38)
+ COURSE_ID                                 NOT NULL NUMBER(38)
+ GRADE_TYPE                                NOT NULL CHAR(1)
+
+-- 3.6
+SQL> SELECT exam_id, grade_type FROM exam
+  2  /
+
+   EXAM_ID G                                                                    
+---------- -                                                                    
+         1 N                                                                    
+         2 Y                                                                    
+         3 N                                                                    
+         4 Y                                                                    
+         5 N                                                                    
+         6 Y                                                                    
+         7 N                                                                    
+         8 Y                                                                    
+         9 N                                                                    
+        10 Y                                                                    
+
+10 rows selected.
+
+SQL> desc student_attempt
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ATTEMPT_ID                                NOT NULL NUMBER(38)
+ STUDENT_ID                                NOT NULL NUMBER(38)
+ EXAM_ID                                   NOT NULL NUMBER(38)
+ SEMESTER_ID                               NOT NULL NUMBER(38)
+ EXAM_DT_ID                                NOT NULL NUMBER(38)
+ GRADE                                              NUMBER(38)
+ RESULT_CATEGORY_ID                                 NUMBER(38)
+
+--  3.7
+SQL> SELECT student_id, exam_id FROM student_attempt WHERE grade IS NULL;
+
+STUDENT_ID    EXAM_ID                                                           
+---------- ----------                                                           
+         1          1                                                           
+         1          1                                                           
+         1          1                                                           
+        10          1                                                           
+         3          1                                                           
+         3          1                                                           
+         3          1                                                           
+         2          1                                                           
+         4          3                                                           
+         6          5                                                           
+         8          7                                                           
+
+STUDENT_ID    EXAM_ID                                                           
+---------- ----------                                                           
+         9          9                                                           
+
+12 rows selected.
+
+--  3.8
+SQL> SELECT sa.student_id, sa.exam_id, sa.grade
+  2  FROM student_attempt sa
+  3  INNER JOIN calendar ca ON ca.day_id = sa.exam_dt_id
+  4  WHERE ca.month_of_year between 3 and 5 and sa.grade is not null
+  5  UNION
+  6  SELECT sa.student_id, sa.exam_id, sa.grade
+  7  FROM student_attempt sa
+  8  INNER JOIN course c ON c.course_id = sa.exam_id
+  9  WHERE c.course_title = 'Data Analysis';
+
+STUDENT_ID    EXAM_ID      GRADE                                                
+---------- ---------- ----------                                                
+         1          1                                                           
+         2          1                                                           
+         3          1                                                           
+         3          2         10                                                
+         7          6         90                                                
+         9          8         10                                                
+        10          1                                                           
+
+7 rows selected.
+
+--  3.9
+SQL> SELECT c.course_title
+  2  FROM course c
+  3  LEFT OUTER JOIN student_attempt sa
+  4  ON sa.exam_id = c.course_id
+  5  WHERE sa.exam_id IS NULL;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+Probabilistic Graphical Models                                                  
+Automata          
+
+-- 3.10
+SQL> SELECT DISTINCT exam_id
+  2  FROM student_attempt
+  3  WHERE exam_id NOT IN
+  4  (
+  5   SELECT exam_id
+  6   FROM student_attempt
+  7   WHERE grade IS NOT NULL
+  8  )
+  9  AND
+ 10  grade IS NULL;
+
+   EXAM_ID                                                                      
+----------                                                                      
+         1                                                                      
+         5                                                                      
+         3                                                                      
+         7                                                                      
+         9                                                                                                                                    
+
+--  3.11
+SQL> SELECT c.DT, COUNT(sa.attempt_id)
+  2  FROM calendar c
+  3  LEFT JOIN student_attempt sa
+  4  ON sa.exam_dt_id = c.day_id
+  5  WHERE c.dt between TO_DATE('01-DEC-2012') and TO_DATE('31-DEC-2012')
+  6  GROUP BY c.dt
+  7  ORDER BY c.dt;
+
+DT        COUNT(SA.ATTEMPT_ID)                                                  
+--------- --------------------                                                  
+01-DEC-12                    0                                                  
+02-DEC-12                    0                                                  
+03-DEC-12                    0                                                  
+04-DEC-12                    0                                                  
+05-DEC-12                    0                                                  
+06-DEC-12                    0                                                  
+07-DEC-12                    0                                                  
+08-DEC-12                    0                                                  
+09-DEC-12                    0                                                  
+10-DEC-12                    0                                                  
+11-DEC-12                    0                                                  
+
+DT        COUNT(SA.ATTEMPT_ID)                                                  
+--------- --------------------                                                  
+12-DEC-12                    0                                                  
+13-DEC-12                    0                                                  
+14-DEC-12                    0                                                  
+15-DEC-12                    0                                                  
+16-DEC-12                    0                                                  
+17-DEC-12                    0                                                  
+18-DEC-12                    0                                                  
+19-DEC-12                    0                                                  
+20-DEC-12                    0                                                  
+21-DEC-12                    0                                                  
+22-DEC-12                    0                                                  
+
+DT        COUNT(SA.ATTEMPT_ID)                                                  
+--------- --------------------                                                  
+23-DEC-12                    0                                                  
+24-DEC-12                    1                                                  
+25-DEC-12                    0                                                  
+26-DEC-12                    0                                                  
+27-DEC-12                    0                                                  
+28-DEC-12                    0                                                  
+29-DEC-12                    0                                                  
+30-DEC-12                    0                                                  
+31-DEC-12                    0                                                  
+
+31 rows selected.
+
+SQL> spool off
+

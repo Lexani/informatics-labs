@@ -1,0 +1,1577 @@
+SQL> connect dmitry@xe
+Connected.
+SQL> disconnect
+Disconnected from Oracle Database 11g Express Edition Release 11.2.0.2.0 - Production
+SQL> connect dmitry@xe
+Connected.
+SQL> disconnect
+Disconnected from Oracle Database 11g Express Edition Release 11.2.0.2.0 - Production
+SQL> connect
+Enter user-name: dmitry
+Connected.
+SQL> disconnect
+Disconnected from Oracle Database 11g Express Edition Release 11.2.0.2.0 - Production
+SQL> connect dmitry@xe
+Connected.
+SQL> get D:\Exams.sql
+  1  -- create user username identified by password
+  2  -- grant create session, create table, create view, create procedure, create sequence to username
+  3  -- grant select on v_$session to username
+  4  -- grant unlimited tablespace to username
+  5  -- set serveroutput on
+  6  CREATE OR REPLACE PROCEDURE drop_if_exists(p_obj_type IN VARCHAR2,
+  7                                             p_obj_name IN VARCHAR2)
+  8  IS
+  9  l_count NUMBER;
+ 10  BEGIN
+ 11    IF p_obj_type is NULL OR p_obj_name IS NULL
+ 12      THEN RETURN;
+ 13    END IF;
+ 14    dbms_output.put_line('SELECT COUNT(*)
+ 15                         FROM user_'  || p_obj_type || 's
+ 16                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')');
+ 17    dbms_output.put_line('DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end);  
+ 18    EXECUTE IMMEDIATE 'SELECT COUNT(*)
+ 19                         FROM user_'  || p_obj_type || 's
+ 20                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')' INTO l_count;  
+ 21    dbms_output.put_line(l_count);
+ 22    IF l_count <> 0 THEN
+ 23       EXECUTE IMMEDIATE 'DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end;
+ 24     END IF;
+ 25  END;
+ 26  /                                          
+ 27  begin
+ 28  -- Student
+ 29  drop_if_exists('table', 'Student');
+ 30  EXECUTE IMMEDIATE 'CREATE TABLE Student
+ 31  (
+ 32    student_id            INTEGER NOT NULL,
+ 33    student_first_nm      VARCHAR2(100),
+ 34    student_last_nm       VARCHAR2(100),
+ 35    student_other_details VARCHAR2(200),
+ 36    CONSTRAINT Student_PK PRIMARY KEY (student_id),
+ 37    CONSTRAINT Student_UK UNIQUE (student_first_nm, student_last_nm, student_other_details)
+ 38  )';
+ 39  drop_if_exists('sequence', 'Student_seq');
+ 40  execute immediate 'CREATE SEQUENCE Student_seq CACHE 20';
+ 41  -- Course
+ 42  drop_if_exists('table', 'Course');
+ 43  execute immediate 'CREATE TABLE Course
+ 44  (
+ 45    course_id    INTEGER NOT NULL,
+ 46    course_title VARCHAR2(100),
+ 47    CONSTRAINT Course_PK PRIMARY KEY (Course_id),
+ 48    CONSTRAINT Course_UK UNIQUE (course_title)
+ 49  )';
+ 50  drop_if_exists('sequence', 'Course_seq');
+ 51  execute immediate 'CREATE SEQUENCE Course_seq CACHE 20';
+ 52  -- Semester
+ 53  drop_if_exists('table', 'Semester');
+ 54  execute immediate 'CREATE TABLE Semester
+ 55  (
+ 56    semester_id INTEGER NOT NULL,
+ 57    semester_nm VARCHAR2(100),
+ 58    start_dt    DATE,
+ 59    end_Dt      DATE,
+ 60    CONSTRAINT Semester_PK PRIMARY KEY (Semester_id),
+ 61    CONSTRAINT Semester_UK UNIQUE (semester_nm, start_dt, end_dt)
+ 62  )';
+ 63  drop_if_exists('sequence', 'Semester_seq');
+ 64  execute immediate 'CREATE SEQUENCE Semester_seq CACHE 20';
+ 65  -- Exam
+ 66  drop_if_exists('table', 'Exam');
+ 67  --CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)
+ 68  execute immediate 'CREATE TABLE Exam
+ 69  (
+ 70    exam_id    INTEGER NOT NULL,
+ 71    course_id  INTEGER NOT NULL,
+ 72    grade_type CHAR(1) NOT NULL,
+ 73    CONSTRAINT Exam_PK PRIMARY KEY (exam_id),
+ 74    CONSTRAINT Exam_UK UNIQUE (course_id)
+ 75  )';
+ 76  drop_if_exists('sequence', 'Exam_seq');
+ 77  execute immediate 'CREATE SEQUENCE Exam_seq CACHE 20';
+ 78  -- Calendar
+ 79  drop_if_exists('table', 'Calendar');
+ 80  execute immediate 'CREATE TABLE Calendar
+ 81  (
+ 82    day_id        INTEGER NOT NULL,
+ 83    dt            DATE NOT NULL,
+ 84    day_of_month  INTEGER NOT NULL,
+ 85    month_of_year INTEGER NOT NULL,
+ 86    year_num      INTEGER NOT NULL,
+ 87    CONSTRAINT Calendar_PK PRIMARY KEY (day_id),
+ 88    CONSTRAINT Calendar_UK UNIQUE (dt)
+ 89  )';
+ 90  drop_if_exists('sequence', 'Calendar_seq');
+ 91  execute immediate 'CREATE SEQUENCE Calendar_seq CACHE 20';
+ 92  -- Results
+ 93  drop_if_exists('table', 'Result_Category');
+ 94  execute immediate 'CREATE TABLE Result_Category
+ 95  (
+ 96    result_category_id INTEGER NOT NULL,
+ 97    result_category_nm VARCHAR2(100) NOT NULL,
+ 98    CONSTRAINT Result_Category_PK PRIMARY KEY (result_category_id),
+ 99    CONSTRAINT Result_Category_UK UNIQUE (result_category_nm)
+100  )';
+101  drop_if_exists('sequence', 'Result_Category_seq');
+102  execute immediate 'CREATE SEQUENCE Result_Category_seq CACHE 20';
+103  -- Attempts
+104  drop_if_exists('table', 'Student_Attempt');
+105  execute immediate 'CREATE TABLE Student_Attempt
+106  (
+107    attempt_id         INTEGER NOT NULL,
+108    student_id         INTEGER NOT NULL,
+109    exam_id            INTEGER NOT NULL,
+110    semester_id        INTEGER NOT NULL,
+111    exam_dt_id         INTEGER NOT NULL,
+112    grade              INTEGER,
+113    result_category_id INTEGER,
+114    CONSTRAINT Student_Attempt_PK PRIMARY KEY (attempt_id),
+115    CONSTRAINT Student_Attempt_UK UNIQUE (student_id, exam_id, semester_id, exam_dt_id)
+116  )';
+117  drop_if_exists('sequence', 'Student_Attempt_seq');
+118  execute immediate 'CREATE SEQUENCE Student_Attempt_seq CACHE 20';
+119  -- Forein Keys
+120  drop_if_exists('constraint', 'Exam_FK1');
+121  execute immediate 'ALTER TABLE Exam ADD CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)';
+122  drop_if_exists('constraint', 'Student_Attempt_FK1');
+123  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK1 FOREIGN KEY (student_id) REFERENCES Student(student_id)';
+124  drop_if_exists('constraint', 'Student_Attempt_FK2');
+125  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK2 FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)';
+126  drop_if_exists('constraint', 'Student_Attempt_FK3');
+127  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK3 FOREIGN KEY (semester_id) REFERENCES Semester(semester_id)';
+128  drop_if_exists('constraint', 'Student_Attempt_FK4');
+129  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK4 FOREIGN KEY (exam_dt_id) REFERENCES Calendar(day_id)';
+130  end;
+131  /
+132  --Insert data
+133  BEGIN
+134    DELETE Result_Category;  
+135    COMMIT;
+136    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+137      VALUES(Result_Category_seq.nextval, 'Low');
+138    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+139      VALUES(Result_Category_seq.nextval, 'High');    
+140    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+141      VALUES(Result_Category_seq.nextval, 'Fail');  
+142    COMMIT;      
+143  END;  
+144  /
+145  DECLARE
+146    l_st_dt DATE := to_date('2010/01/01','yyyy/mm/dd'); -- day to begin
+147    l_long  INTEGER := 5; -- 5 years
+148    l_count INTEGER;
+149  BEGIN
+150    DELETE Calendar;  
+151    COMMIT;
+152    l_count := add_months(l_st_dt, 12*l_long) - l_st_dt;
+153    FOR indx IN 0..l_count LOOP
+154      l_st_dt := l_st_dt + 1;
+155      INSERT INTO Calendar(day_id, dt, day_of_month, month_of_year, year_num)
+156        VALUES(Calendar_seq.nextval, l_st_dt, to_number(to_char(l_st_dt, 'dd')), to_number(to_char(l_st_dt, 'mm')), to_number(to_char(l_st_dt, 'yyyy')));
+157    END LOOP;  
+158    COMMIT;      
+159  END;  
+160  /
+161  BEGIN
+162    DELETE Semester;  
+163    COMMIT;
+164    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+165      VALUES(semester_seq.nextval, 'Autumn', to_date('2010/09/01','yyyy/mm/dd'), to_date('2010/12/24','yyyy/mm/dd')); 
+166    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+167      VALUES(semester_seq.nextval, 'Spring', to_date('2010/02/01','yyyy/mm/dd'), to_date('2010/05/25','yyyy/mm/dd'));
+168    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+169      VALUES(semester_seq.nextval, 'Autumn', to_date('2011/09/01','yyyy/mm/dd'), to_date('2011/12/24','yyyy/mm/dd')); 
+170    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+171      VALUES(semester_seq.nextval, 'Spring', to_date('2011/02/01','yyyy/mm/dd'), to_date('2011/05/25','yyyy/mm/dd'));        
+172    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+173      VALUES(semester_seq.nextval, 'Autumn', to_date('2012/09/01','yyyy/mm/dd'), to_date('2012/12/24','yyyy/mm/dd')); 
+174    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+175      VALUES(semester_seq.nextval, 'Spring', to_date('2012/02/01','yyyy/mm/dd'), to_date('2012/05/25','yyyy/mm/dd'));
+176    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+177      VALUES(semester_seq.nextval, 'Autumn', to_date('2013/09/01','yyyy/mm/dd'), to_date('2013/12/24','yyyy/mm/dd')); 
+178    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+179      VALUES(semester_seq.nextval, 'Spring', to_date('2013/02/01','yyyy/mm/dd'), to_date('2013/05/25','yyyy/mm/dd'));        
+180    COMMIT;      
+181  END;
+182  /
+183  BEGIN
+184    DELETE Course;  
+185    COMMIT;
+186    INSERT INTO Course(course_id, course_title)
+187      VALUES(course_seq.nextval, 'Data Analysis');   
+188    INSERT INTO Course(course_id, course_title)
+189      VALUES(course_seq.nextval, 'Design and Analysis of Algorithms');     
+190    INSERT INTO Course(course_id, course_title)
+191      VALUES(course_seq.nextval, 'Cryptography');  
+192    INSERT INTO Course(course_id, course_title)
+193      VALUES(course_seq.nextval, 'Human-Computer Interaction');  
+194    INSERT INTO Course(course_id, course_title)
+195      VALUES(course_seq.nextval, 'Compilers');  
+196    INSERT INTO Course(course_id, course_title)
+197      VALUES(course_seq.nextval, 'Introduction to Logic');  
+198    INSERT INTO Course(course_id, course_title)
+199      VALUES(course_seq.nextval, 'Machine Learning');  
+200    INSERT INTO Course(course_id, course_title)
+201      VALUES(course_seq.nextval, 'Natural Language Processing');  
+202    INSERT INTO Course(course_id, course_title)
+203      VALUES(course_seq.nextval, 'Game Theory');  
+204    INSERT INTO Course(course_id, course_title)
+205      VALUES(course_seq.nextval, 'Probabilistic Graphical Models');  
+206    INSERT INTO Course(course_id, course_title)
+207      VALUES(course_seq.nextval, 'Automata');       
+208    COMMIT;      
+209  END;
+210  /
+211  BEGIN
+212    DELETE exam;
+213    COMMIT;
+214    FOR rec IN (SELECT ROWNUM rn, c.* FROM Course c WHERE course_title NOT IN ('Automata')) LOOP    
+215      INSERT INTO Exam(exam_id, course_id, grade_type)
+216        VALUES(exam_seq.nextval, rec.course_id, CASE WHEN MOD(rec.rn, 2) = 0 THEN 'Y' ELSE 'N' END);
+217    END LOOP;  
+218    COMMIT;
+219  END;  
+220  /
+221  BEGIN
+222    DELETE Student;
+223    COMMIT;
+224    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+225      VALUES(student_seq.nextval, 'Cynthia', 'Bailey', NULL);
+226    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+227      VALUES(student_seq.nextval, 'Ricardo', 'Metcalfe', NULL);
+228    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+229      VALUES(student_seq.nextval, 'Marcin', 'Ostrowski', NULL);  
+230    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+231      VALUES(student_seq.nextval, 'Iris', 'Jones', NULL);
+232    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+233      VALUES(student_seq.nextval, 'Aziz', 'Abel', NULL);  
+234    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+235      VALUES(student_seq.nextval, 'Maria', 'Lai', NULL);
+236    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+237      VALUES(student_seq.nextval, 'Robert', 'Larue', NULL);
+238    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+239      VALUES(student_seq.nextval, 'William', 'Thomas', '4092 Maxwell Farm Road Arlington, VA 22201');
+240    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+241      VALUES(student_seq.nextval, 'Daniel', 'McCarthy', 'DanielMMcCarthy@teleworm.us');
+242    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+243      VALUES(student_seq.nextval, 'Cynthia', 'Riley', NULL);                                     
+244  END; 
+245  /
+246  BEGIN
+247    DELETE Student_attempt;
+248    COMMIT;
+249    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+250      VALUES(Student_attempt_seq.nextval, 
+251             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+252             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+253             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+254             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/18','yyyy/mm/dd')), 
+255             CASE 
+256               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+257                 THEN 40
+258                 ELSE NULL
+259             END, 
+260             CASE 
+261               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+262                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+263                 ELSE NULL
+264             END);
+265    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+266      VALUES(Student_attempt_seq.nextval, 
+267             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+268             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+269             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+270             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/19','yyyy/mm/dd')), 
+271             CASE 
+272               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+273                 THEN 50
+274                 ELSE NULL
+275             END, 
+276             CASE 
+277               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+278                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+279                 ELSE NULL
+280             END);     
+281    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+282      VALUES(Student_attempt_seq.nextval, 
+283             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+284             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+285             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+286             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+287             CASE 
+288               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+289                 THEN 60
+290                 ELSE NULL
+291             END, 
+292             CASE 
+293               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+294                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+295                 ELSE NULL
+296             END);          
+297    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+298      VALUES(Student_attempt_seq.nextval, 
+299             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Riley'), 
+300             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+301             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+302             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+303             CASE 
+304               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+305                 THEN 100
+306                 ELSE NULL
+307             END, 
+308             CASE 
+309               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+310                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+311                 ELSE NULL
+312             END);  
+313    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+314      VALUES(Student_attempt_seq.nextval, 
+315             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+316             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+317             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+318             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/28','yyyy/mm/dd')), 
+319             CASE 
+320               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+321                 THEN 70
+322                 ELSE NULL
+323             END, 
+324             CASE 
+325               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+326                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+327                 ELSE NULL
+328             END);
+329    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+330      VALUES(Student_attempt_seq.nextval, 
+331             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+332             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+333             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+334             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/29','yyyy/mm/dd')), 
+335             CASE 
+336               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+337                 THEN 70
+338                 ELSE NULL
+339             END, 
+340             CASE 
+341               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+342                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+343                 ELSE NULL
+344             END);     
+345    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+346      VALUES(Student_attempt_seq.nextval, 
+347             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+348             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+349             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+350             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/30','yyyy/mm/dd')), 
+351             CASE 
+352               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+353                 THEN 80
+354                 ELSE NULL
+355             END, 
+356             CASE 
+357               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+358                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+359                 ELSE NULL
+360             END);          
+361    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+362      VALUES(Student_attempt_seq.nextval, 
+363             (SELECT student_id FROM Student WHERE student_first_nm = 'Ricardo'), 
+364             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+365             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+366             (SELECT day_id from Calendar WHERE dt = to_date('2010/11/15','yyyy/mm/dd')), 
+367             CASE 
+368               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+369                 THEN 10
+370                 ELSE NULL
+371             END, 
+372             CASE 
+373               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+374                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+375                 ELSE NULL
+376             END);   
+377    ------------
+378    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+379      VALUES(Student_attempt_seq.nextval, 
+380             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+381             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms'),  
+382             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2010/02/01','yyyy/mm/dd')), 
+383             (SELECT day_id from Calendar WHERE dt = to_date('2010/03/15','yyyy/mm/dd')), 
+384             CASE 
+385               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'Y'
+386                 THEN 10
+387                 ELSE NULL
+388             END, 
+389             CASE 
+390               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'N'
+391                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+392                 ELSE NULL
+393             END);   
+394    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+395      VALUES(Student_attempt_seq.nextval, 
+396             (SELECT student_id FROM Student WHERE student_first_nm = 'Iris'), 
+397             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography'),  
+398             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2011/09/01','yyyy/mm/dd')), 
+399             (SELECT day_id from Calendar WHERE dt = to_date('2011/10/04','yyyy/mm/dd')), 
+400             CASE 
+401               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'Y'
+402                 THEN 100
+403                 ELSE NULL
+404             END, 
+405             CASE 
+406               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'N'
+407                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+408                 ELSE NULL
+409             END);          
+410    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+411      VALUES(Student_attempt_seq.nextval, 
+412             (SELECT student_id FROM Student WHERE student_first_nm = 'Aziz'), 
+413             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction'),  
+414             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2011/02/01','yyyy/mm/dd')), 
+415             (SELECT day_id from Calendar WHERE dt = to_date('2011/02/01','yyyy/mm/dd')), 
+416             CASE 
+417               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'Y'
+418                 THEN 50
+419                 ELSE NULL
+420             END, 
+421             CASE 
+422               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'N'
+423                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+424                 ELSE NULL
+425             END);      
+426    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+427      VALUES(Student_attempt_seq.nextval, 
+428             (SELECT student_id FROM Student WHERE student_first_nm = 'Maria'), 
+429             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers'),  
+430             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2012/09/01','yyyy/mm/dd')), 
+431             (SELECT day_id from Calendar WHERE dt = to_date('2012/12/24','yyyy/mm/dd')), 
+432             CASE 
+433               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'Y'
+434                 THEN 60
+435                 ELSE NULL
+436             END, 
+437             CASE 
+438               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'N'
+439                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+440                 ELSE NULL
+441             END);     
+442    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+443      VALUES(Student_attempt_seq.nextval, 
+444             (SELECT student_id FROM Student WHERE student_first_nm = 'Robert'), 
+445             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic'),  
+446             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+447             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+448             CASE 
+449               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'Y'
+450                 THEN 90
+451                 ELSE NULL
+452             END, 
+453             CASE 
+454               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'N'
+455                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+456                 ELSE NULL
+457             END);     
+458    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+459      VALUES(Student_attempt_seq.nextval, 
+460             (SELECT student_id FROM Student WHERE student_first_nm = 'William'), 
+461             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning'),  
+462             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+463             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+464             CASE 
+465               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'Y'
+466                 THEN 100
+467                 ELSE NULL
+468             END, 
+469             CASE 
+470               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'N'
+471                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+472                 ELSE NULL
+473             END);       
+474    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+475      VALUES(Student_attempt_seq.nextval, 
+476             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+477             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing'),  
+478             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+479             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/20','yyyy/mm/dd')), 
+480             CASE 
+481               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'Y'
+482                 THEN 10
+483                 ELSE NULL
+484             END, 
+485             CASE 
+486               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'N'
+487                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+488                 ELSE NULL
+489             END); 
+490    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+491      VALUES(Student_attempt_seq.nextval, 
+492             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+493             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory'),  
+494             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+495             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/21','yyyy/mm/dd')), 
+496             CASE 
+497               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'Y'
+498                 THEN 100
+499                 ELSE NULL
+500             END, 
+501             CASE 
+502               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'N'
+503                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+504                 ELSE NULL
+505             END);                                                                                     
+506    COMMIT;
+507* END;
+508  /
+
+Warning: Procedure created with compilation errors.
+
+SQL> list
+  1  -- create user username identified by password
+  2  -- grant create session, create table, create view, create procedure, create sequence to username
+  3  -- grant select on v_$session to username
+  4  -- grant unlimited tablespace to username
+  5  -- set serveroutput on
+  6  CREATE OR REPLACE PROCEDURE drop_if_exists(p_obj_type IN VARCHAR2,
+  7                                             p_obj_name IN VARCHAR2)
+  8  IS
+  9  l_count NUMBER;
+ 10  BEGIN
+ 11    IF p_obj_type is NULL OR p_obj_name IS NULL
+ 12      THEN RETURN;
+ 13    END IF;
+ 14    dbms_output.put_line('SELECT COUNT(*)
+ 15                         FROM user_'  || p_obj_type || 's
+ 16                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')');
+ 17    dbms_output.put_line('DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end);  
+ 18    EXECUTE IMMEDIATE 'SELECT COUNT(*)
+ 19                         FROM user_'  || p_obj_type || 's
+ 20                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')' INTO l_count;  
+ 21    dbms_output.put_line(l_count);
+ 22    IF l_count <> 0 THEN
+ 23       EXECUTE IMMEDIATE 'DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end;
+ 24     END IF;
+ 25  END;
+ 26  /                                          
+ 27  begin
+ 28  -- Student
+ 29  drop_if_exists('table', 'Student');
+ 30  EXECUTE IMMEDIATE 'CREATE TABLE Student
+ 31  (
+ 32    student_id            INTEGER NOT NULL,
+ 33    student_first_nm      VARCHAR2(100),
+ 34    student_last_nm       VARCHAR2(100),
+ 35    student_other_details VARCHAR2(200),
+ 36    CONSTRAINT Student_PK PRIMARY KEY (student_id),
+ 37    CONSTRAINT Student_UK UNIQUE (student_first_nm, student_last_nm, student_other_details)
+ 38  )';
+ 39  drop_if_exists('sequence', 'Student_seq');
+ 40  execute immediate 'CREATE SEQUENCE Student_seq CACHE 20';
+ 41  -- Course
+ 42  drop_if_exists('table', 'Course');
+ 43  execute immediate 'CREATE TABLE Course
+ 44  (
+ 45    course_id    INTEGER NOT NULL,
+ 46    course_title VARCHAR2(100),
+ 47    CONSTRAINT Course_PK PRIMARY KEY (Course_id),
+ 48    CONSTRAINT Course_UK UNIQUE (course_title)
+ 49  )';
+ 50  drop_if_exists('sequence', 'Course_seq');
+ 51  execute immediate 'CREATE SEQUENCE Course_seq CACHE 20';
+ 52  -- Semester
+ 53  drop_if_exists('table', 'Semester');
+ 54  execute immediate 'CREATE TABLE Semester
+ 55  (
+ 56    semester_id INTEGER NOT NULL,
+ 57    semester_nm VARCHAR2(100),
+ 58    start_dt    DATE,
+ 59    end_Dt      DATE,
+ 60    CONSTRAINT Semester_PK PRIMARY KEY (Semester_id),
+ 61    CONSTRAINT Semester_UK UNIQUE (semester_nm, start_dt, end_dt)
+ 62  )';
+ 63  drop_if_exists('sequence', 'Semester_seq');
+ 64  execute immediate 'CREATE SEQUENCE Semester_seq CACHE 20';
+ 65  -- Exam
+ 66  drop_if_exists('table', 'Exam');
+ 67  --CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)
+ 68  execute immediate 'CREATE TABLE Exam
+ 69  (
+ 70    exam_id    INTEGER NOT NULL,
+ 71    course_id  INTEGER NOT NULL,
+ 72    grade_type CHAR(1) NOT NULL,
+ 73    CONSTRAINT Exam_PK PRIMARY KEY (exam_id),
+ 74    CONSTRAINT Exam_UK UNIQUE (course_id)
+ 75  )';
+ 76  drop_if_exists('sequence', 'Exam_seq');
+ 77  execute immediate 'CREATE SEQUENCE Exam_seq CACHE 20';
+ 78  -- Calendar
+ 79  drop_if_exists('table', 'Calendar');
+ 80  execute immediate 'CREATE TABLE Calendar
+ 81  (
+ 82    day_id        INTEGER NOT NULL,
+ 83    dt            DATE NOT NULL,
+ 84    day_of_month  INTEGER NOT NULL,
+ 85    month_of_year INTEGER NOT NULL,
+ 86    year_num      INTEGER NOT NULL,
+ 87    CONSTRAINT Calendar_PK PRIMARY KEY (day_id),
+ 88    CONSTRAINT Calendar_UK UNIQUE (dt)
+ 89  )';
+ 90  drop_if_exists('sequence', 'Calendar_seq');
+ 91  execute immediate 'CREATE SEQUENCE Calendar_seq CACHE 20';
+ 92  -- Results
+ 93  drop_if_exists('table', 'Result_Category');
+ 94  execute immediate 'CREATE TABLE Result_Category
+ 95  (
+ 96    result_category_id INTEGER NOT NULL,
+ 97    result_category_nm VARCHAR2(100) NOT NULL,
+ 98    CONSTRAINT Result_Category_PK PRIMARY KEY (result_category_id),
+ 99    CONSTRAINT Result_Category_UK UNIQUE (result_category_nm)
+100  )';
+101  drop_if_exists('sequence', 'Result_Category_seq');
+102  execute immediate 'CREATE SEQUENCE Result_Category_seq CACHE 20';
+103  -- Attempts
+104  drop_if_exists('table', 'Student_Attempt');
+105  execute immediate 'CREATE TABLE Student_Attempt
+106  (
+107    attempt_id         INTEGER NOT NULL,
+108    student_id         INTEGER NOT NULL,
+109    exam_id            INTEGER NOT NULL,
+110    semester_id        INTEGER NOT NULL,
+111    exam_dt_id         INTEGER NOT NULL,
+112    grade              INTEGER,
+113    result_category_id INTEGER,
+114    CONSTRAINT Student_Attempt_PK PRIMARY KEY (attempt_id),
+115    CONSTRAINT Student_Attempt_UK UNIQUE (student_id, exam_id, semester_id, exam_dt_id)
+116  )';
+117  drop_if_exists('sequence', 'Student_Attempt_seq');
+118  execute immediate 'CREATE SEQUENCE Student_Attempt_seq CACHE 20';
+119  -- Forein Keys
+120  drop_if_exists('constraint', 'Exam_FK1');
+121  execute immediate 'ALTER TABLE Exam ADD CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)';
+122  drop_if_exists('constraint', 'Student_Attempt_FK1');
+123  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK1 FOREIGN KEY (student_id) REFERENCES Student(student_id)';
+124  drop_if_exists('constraint', 'Student_Attempt_FK2');
+125  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK2 FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)';
+126  drop_if_exists('constraint', 'Student_Attempt_FK3');
+127  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK3 FOREIGN KEY (semester_id) REFERENCES Semester(semester_id)';
+128  drop_if_exists('constraint', 'Student_Attempt_FK4');
+129  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK4 FOREIGN KEY (exam_dt_id) REFERENCES Calendar(day_id)';
+130  end;
+131  /
+132  --Insert data
+133  BEGIN
+134    DELETE Result_Category;  
+135    COMMIT;
+136    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+137      VALUES(Result_Category_seq.nextval, 'Low');
+138    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+139      VALUES(Result_Category_seq.nextval, 'High');    
+140    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+141      VALUES(Result_Category_seq.nextval, 'Fail');  
+142    COMMIT;      
+143  END;  
+144  /
+145  DECLARE
+146    l_st_dt DATE := to_date('2010/01/01','yyyy/mm/dd'); -- day to begin
+147    l_long  INTEGER := 5; -- 5 years
+148    l_count INTEGER;
+149  BEGIN
+150    DELETE Calendar;  
+151    COMMIT;
+152    l_count := add_months(l_st_dt, 12*l_long) - l_st_dt;
+153    FOR indx IN 0..l_count LOOP
+154      l_st_dt := l_st_dt + 1;
+155      INSERT INTO Calendar(day_id, dt, day_of_month, month_of_year, year_num)
+156        VALUES(Calendar_seq.nextval, l_st_dt, to_number(to_char(l_st_dt, 'dd')), to_number(to_char(l_st_dt, 'mm')), to_number(to_char(l_st_dt, 'yyyy')));
+157    END LOOP;  
+158    COMMIT;      
+159  END;  
+160  /
+161  BEGIN
+162    DELETE Semester;  
+163    COMMIT;
+164    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+165      VALUES(semester_seq.nextval, 'Autumn', to_date('2010/09/01','yyyy/mm/dd'), to_date('2010/12/24','yyyy/mm/dd')); 
+166    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+167      VALUES(semester_seq.nextval, 'Spring', to_date('2010/02/01','yyyy/mm/dd'), to_date('2010/05/25','yyyy/mm/dd'));
+168    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+169      VALUES(semester_seq.nextval, 'Autumn', to_date('2011/09/01','yyyy/mm/dd'), to_date('2011/12/24','yyyy/mm/dd')); 
+170    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+171      VALUES(semester_seq.nextval, 'Spring', to_date('2011/02/01','yyyy/mm/dd'), to_date('2011/05/25','yyyy/mm/dd'));        
+172    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+173      VALUES(semester_seq.nextval, 'Autumn', to_date('2012/09/01','yyyy/mm/dd'), to_date('2012/12/24','yyyy/mm/dd')); 
+174    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+175      VALUES(semester_seq.nextval, 'Spring', to_date('2012/02/01','yyyy/mm/dd'), to_date('2012/05/25','yyyy/mm/dd'));
+176    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+177      VALUES(semester_seq.nextval, 'Autumn', to_date('2013/09/01','yyyy/mm/dd'), to_date('2013/12/24','yyyy/mm/dd')); 
+178    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+179      VALUES(semester_seq.nextval, 'Spring', to_date('2013/02/01','yyyy/mm/dd'), to_date('2013/05/25','yyyy/mm/dd'));        
+180    COMMIT;      
+181  END;
+182  /
+183  BEGIN
+184    DELETE Course;  
+185    COMMIT;
+186    INSERT INTO Course(course_id, course_title)
+187      VALUES(course_seq.nextval, 'Data Analysis');   
+188    INSERT INTO Course(course_id, course_title)
+189      VALUES(course_seq.nextval, 'Design and Analysis of Algorithms');     
+190    INSERT INTO Course(course_id, course_title)
+191      VALUES(course_seq.nextval, 'Cryptography');  
+192    INSERT INTO Course(course_id, course_title)
+193      VALUES(course_seq.nextval, 'Human-Computer Interaction');  
+194    INSERT INTO Course(course_id, course_title)
+195      VALUES(course_seq.nextval, 'Compilers');  
+196    INSERT INTO Course(course_id, course_title)
+197      VALUES(course_seq.nextval, 'Introduction to Logic');  
+198    INSERT INTO Course(course_id, course_title)
+199      VALUES(course_seq.nextval, 'Machine Learning');  
+200    INSERT INTO Course(course_id, course_title)
+201      VALUES(course_seq.nextval, 'Natural Language Processing');  
+202    INSERT INTO Course(course_id, course_title)
+203      VALUES(course_seq.nextval, 'Game Theory');  
+204    INSERT INTO Course(course_id, course_title)
+205      VALUES(course_seq.nextval, 'Probabilistic Graphical Models');  
+206    INSERT INTO Course(course_id, course_title)
+207      VALUES(course_seq.nextval, 'Automata');       
+208    COMMIT;      
+209  END;
+210  /
+211  BEGIN
+212    DELETE exam;
+213    COMMIT;
+214    FOR rec IN (SELECT ROWNUM rn, c.* FROM Course c WHERE course_title NOT IN ('Automata')) LOOP    
+215      INSERT INTO Exam(exam_id, course_id, grade_type)
+216        VALUES(exam_seq.nextval, rec.course_id, CASE WHEN MOD(rec.rn, 2) = 0 THEN 'Y' ELSE 'N' END);
+217    END LOOP;  
+218    COMMIT;
+219  END;  
+220  /
+221  BEGIN
+222    DELETE Student;
+223    COMMIT;
+224    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+225      VALUES(student_seq.nextval, 'Cynthia', 'Bailey', NULL);
+226    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+227      VALUES(student_seq.nextval, 'Ricardo', 'Metcalfe', NULL);
+228    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+229      VALUES(student_seq.nextval, 'Marcin', 'Ostrowski', NULL);  
+230    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+231      VALUES(student_seq.nextval, 'Iris', 'Jones', NULL);
+232    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+233      VALUES(student_seq.nextval, 'Aziz', 'Abel', NULL);  
+234    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+235      VALUES(student_seq.nextval, 'Maria', 'Lai', NULL);
+236    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+237      VALUES(student_seq.nextval, 'Robert', 'Larue', NULL);
+238    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+239      VALUES(student_seq.nextval, 'William', 'Thomas', '4092 Maxwell Farm Road Arlington, VA 22201');
+240    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+241      VALUES(student_seq.nextval, 'Daniel', 'McCarthy', 'DanielMMcCarthy@teleworm.us');
+242    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+243      VALUES(student_seq.nextval, 'Cynthia', 'Riley', NULL);                                     
+244  END; 
+245  /
+246  BEGIN
+247    DELETE Student_attempt;
+248    COMMIT;
+249    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+250      VALUES(Student_attempt_seq.nextval, 
+251             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+252             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+253             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+254             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/18','yyyy/mm/dd')), 
+255             CASE 
+256               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+257                 THEN 40
+258                 ELSE NULL
+259             END, 
+260             CASE 
+261               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+262                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+263                 ELSE NULL
+264             END);
+265    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+266      VALUES(Student_attempt_seq.nextval, 
+267             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+268             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+269             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+270             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/19','yyyy/mm/dd')), 
+271             CASE 
+272               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+273                 THEN 50
+274                 ELSE NULL
+275             END, 
+276             CASE 
+277               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+278                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+279                 ELSE NULL
+280             END);     
+281    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+282      VALUES(Student_attempt_seq.nextval, 
+283             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+284             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+285             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+286             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+287             CASE 
+288               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+289                 THEN 60
+290                 ELSE NULL
+291             END, 
+292             CASE 
+293               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+294                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+295                 ELSE NULL
+296             END);          
+297    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+298      VALUES(Student_attempt_seq.nextval, 
+299             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Riley'), 
+300             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+301             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+302             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+303             CASE 
+304               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+305                 THEN 100
+306                 ELSE NULL
+307             END, 
+308             CASE 
+309               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+310                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+311                 ELSE NULL
+312             END);  
+313    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+314      VALUES(Student_attempt_seq.nextval, 
+315             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+316             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+317             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+318             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/28','yyyy/mm/dd')), 
+319             CASE 
+320               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+321                 THEN 70
+322                 ELSE NULL
+323             END, 
+324             CASE 
+325               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+326                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+327                 ELSE NULL
+328             END);
+329    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+330      VALUES(Student_attempt_seq.nextval, 
+331             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+332             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+333             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+334             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/29','yyyy/mm/dd')), 
+335             CASE 
+336               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+337                 THEN 70
+338                 ELSE NULL
+339             END, 
+340             CASE 
+341               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+342                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+343                 ELSE NULL
+344             END);     
+345    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+346      VALUES(Student_attempt_seq.nextval, 
+347             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+348             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+349             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+350             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/30','yyyy/mm/dd')), 
+351             CASE 
+352               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+353                 THEN 80
+354                 ELSE NULL
+355             END, 
+356             CASE 
+357               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+358                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+359                 ELSE NULL
+360             END);          
+361    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+362      VALUES(Student_attempt_seq.nextval, 
+363             (SELECT student_id FROM Student WHERE student_first_nm = 'Ricardo'), 
+364             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+365             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+366             (SELECT day_id from Calendar WHERE dt = to_date('2010/11/15','yyyy/mm/dd')), 
+367             CASE 
+368               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+369                 THEN 10
+370                 ELSE NULL
+371             END, 
+372             CASE 
+373               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+374                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+375                 ELSE NULL
+376             END);   
+377    ------------
+378    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+379      VALUES(Student_attempt_seq.nextval, 
+380             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+381             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms'),  
+382             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2010/02/01','yyyy/mm/dd')), 
+383             (SELECT day_id from Calendar WHERE dt = to_date('2010/03/15','yyyy/mm/dd')), 
+384             CASE 
+385               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'Y'
+386                 THEN 10
+387                 ELSE NULL
+388             END, 
+389             CASE 
+390               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'N'
+391                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+392                 ELSE NULL
+393             END);   
+394    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+395      VALUES(Student_attempt_seq.nextval, 
+396             (SELECT student_id FROM Student WHERE student_first_nm = 'Iris'), 
+397             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography'),  
+398             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2011/09/01','yyyy/mm/dd')), 
+399             (SELECT day_id from Calendar WHERE dt = to_date('2011/10/04','yyyy/mm/dd')), 
+400             CASE 
+401               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'Y'
+402                 THEN 100
+403                 ELSE NULL
+404             END, 
+405             CASE 
+406               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'N'
+407                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+408                 ELSE NULL
+409             END);          
+410    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+411      VALUES(Student_attempt_seq.nextval, 
+412             (SELECT student_id FROM Student WHERE student_first_nm = 'Aziz'), 
+413             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction'),  
+414             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2011/02/01','yyyy/mm/dd')), 
+415             (SELECT day_id from Calendar WHERE dt = to_date('2011/02/01','yyyy/mm/dd')), 
+416             CASE 
+417               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'Y'
+418                 THEN 50
+419                 ELSE NULL
+420             END, 
+421             CASE 
+422               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'N'
+423                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+424                 ELSE NULL
+425             END);      
+426    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+427      VALUES(Student_attempt_seq.nextval, 
+428             (SELECT student_id FROM Student WHERE student_first_nm = 'Maria'), 
+429             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers'),  
+430             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2012/09/01','yyyy/mm/dd')), 
+431             (SELECT day_id from Calendar WHERE dt = to_date('2012/12/24','yyyy/mm/dd')), 
+432             CASE 
+433               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'Y'
+434                 THEN 60
+435                 ELSE NULL
+436             END, 
+437             CASE 
+438               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'N'
+439                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+440                 ELSE NULL
+441             END);     
+442    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+443      VALUES(Student_attempt_seq.nextval, 
+444             (SELECT student_id FROM Student WHERE student_first_nm = 'Robert'), 
+445             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic'),  
+446             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+447             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+448             CASE 
+449               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'Y'
+450                 THEN 90
+451                 ELSE NULL
+452             END, 
+453             CASE 
+454               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'N'
+455                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+456                 ELSE NULL
+457             END);     
+458    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+459      VALUES(Student_attempt_seq.nextval, 
+460             (SELECT student_id FROM Student WHERE student_first_nm = 'William'), 
+461             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning'),  
+462             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+463             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+464             CASE 
+465               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'Y'
+466                 THEN 100
+467                 ELSE NULL
+468             END, 
+469             CASE 
+470               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'N'
+471                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+472                 ELSE NULL
+473             END);       
+474    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+475      VALUES(Student_attempt_seq.nextval, 
+476             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+477             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing'),  
+478             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+479             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/20','yyyy/mm/dd')), 
+480             CASE 
+481               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'Y'
+482                 THEN 10
+483                 ELSE NULL
+484             END, 
+485             CASE 
+486               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'N'
+487                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+488                 ELSE NULL
+489             END); 
+490    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+491      VALUES(Student_attempt_seq.nextval, 
+492             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+493             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory'),  
+494             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+495             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/21','yyyy/mm/dd')), 
+496             CASE 
+497               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'Y'
+498                 THEN 100
+499                 ELSE NULL
+500             END, 
+501             CASE 
+502               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'N'
+503                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+504                 ELSE NULL
+505             END);                                                                                     
+506    COMMIT;
+507* END;
+SQL> run
+  1  -- create user username identified by password
+  2  -- grant create session, create table, create view, create procedure, create sequence to username
+  3  -- grant select on v_$session to username
+  4  -- grant unlimited tablespace to username
+  5  -- set serveroutput on
+  6  CREATE OR REPLACE PROCEDURE drop_if_exists(p_obj_type IN VARCHAR2,
+  7                                             p_obj_name IN VARCHAR2)
+  8  IS
+  9  l_count NUMBER;
+ 10  BEGIN
+ 11    IF p_obj_type is NULL OR p_obj_name IS NULL
+ 12      THEN RETURN;
+ 13    END IF;
+ 14    dbms_output.put_line('SELECT COUNT(*)
+ 15                         FROM user_'  || p_obj_type || 's
+ 16                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')');
+ 17    dbms_output.put_line('DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end);  
+ 18    EXECUTE IMMEDIATE 'SELECT COUNT(*)
+ 19                         FROM user_'  || p_obj_type || 's
+ 20                        WHERE upper(' || p_obj_type || '_name) = UPPER(''' || p_obj_name || ''')' INTO l_count;  
+ 21    dbms_output.put_line(l_count);
+ 22    IF l_count <> 0 THEN
+ 23       EXECUTE IMMEDIATE 'DROP '|| p_obj_type || ' ' || p_obj_name || case when upper(p_obj_type) = upper('table') then ' cascade constraints' else ' ' end;
+ 24     END IF;
+ 25  END;
+ 26  /                                          
+ 27  begin
+ 28  -- Student
+ 29  drop_if_exists('table', 'Student');
+ 30  EXECUTE IMMEDIATE 'CREATE TABLE Student
+ 31  (
+ 32    student_id            INTEGER NOT NULL,
+ 33    student_first_nm      VARCHAR2(100),
+ 34    student_last_nm       VARCHAR2(100),
+ 35    student_other_details VARCHAR2(200),
+ 36    CONSTRAINT Student_PK PRIMARY KEY (student_id),
+ 37    CONSTRAINT Student_UK UNIQUE (student_first_nm, student_last_nm, student_other_details)
+ 38  )';
+ 39  drop_if_exists('sequence', 'Student_seq');
+ 40  execute immediate 'CREATE SEQUENCE Student_seq CACHE 20';
+ 41  -- Course
+ 42  drop_if_exists('table', 'Course');
+ 43  execute immediate 'CREATE TABLE Course
+ 44  (
+ 45    course_id    INTEGER NOT NULL,
+ 46    course_title VARCHAR2(100),
+ 47    CONSTRAINT Course_PK PRIMARY KEY (Course_id),
+ 48    CONSTRAINT Course_UK UNIQUE (course_title)
+ 49  )';
+ 50  drop_if_exists('sequence', 'Course_seq');
+ 51  execute immediate 'CREATE SEQUENCE Course_seq CACHE 20';
+ 52  -- Semester
+ 53  drop_if_exists('table', 'Semester');
+ 54  execute immediate 'CREATE TABLE Semester
+ 55  (
+ 56    semester_id INTEGER NOT NULL,
+ 57    semester_nm VARCHAR2(100),
+ 58    start_dt    DATE,
+ 59    end_Dt      DATE,
+ 60    CONSTRAINT Semester_PK PRIMARY KEY (Semester_id),
+ 61    CONSTRAINT Semester_UK UNIQUE (semester_nm, start_dt, end_dt)
+ 62  )';
+ 63  drop_if_exists('sequence', 'Semester_seq');
+ 64  execute immediate 'CREATE SEQUENCE Semester_seq CACHE 20';
+ 65  -- Exam
+ 66  drop_if_exists('table', 'Exam');
+ 67  --CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)
+ 68  execute immediate 'CREATE TABLE Exam
+ 69  (
+ 70    exam_id    INTEGER NOT NULL,
+ 71    course_id  INTEGER NOT NULL,
+ 72    grade_type CHAR(1) NOT NULL,
+ 73    CONSTRAINT Exam_PK PRIMARY KEY (exam_id),
+ 74    CONSTRAINT Exam_UK UNIQUE (course_id)
+ 75  )';
+ 76  drop_if_exists('sequence', 'Exam_seq');
+ 77  execute immediate 'CREATE SEQUENCE Exam_seq CACHE 20';
+ 78  -- Calendar
+ 79  drop_if_exists('table', 'Calendar');
+ 80  execute immediate 'CREATE TABLE Calendar
+ 81  (
+ 82    day_id        INTEGER NOT NULL,
+ 83    dt            DATE NOT NULL,
+ 84    day_of_month  INTEGER NOT NULL,
+ 85    month_of_year INTEGER NOT NULL,
+ 86    year_num      INTEGER NOT NULL,
+ 87    CONSTRAINT Calendar_PK PRIMARY KEY (day_id),
+ 88    CONSTRAINT Calendar_UK UNIQUE (dt)
+ 89  )';
+ 90  drop_if_exists('sequence', 'Calendar_seq');
+ 91  execute immediate 'CREATE SEQUENCE Calendar_seq CACHE 20';
+ 92  -- Results
+ 93  drop_if_exists('table', 'Result_Category');
+ 94  execute immediate 'CREATE TABLE Result_Category
+ 95  (
+ 96    result_category_id INTEGER NOT NULL,
+ 97    result_category_nm VARCHAR2(100) NOT NULL,
+ 98    CONSTRAINT Result_Category_PK PRIMARY KEY (result_category_id),
+ 99    CONSTRAINT Result_Category_UK UNIQUE (result_category_nm)
+100  )';
+101  drop_if_exists('sequence', 'Result_Category_seq');
+102  execute immediate 'CREATE SEQUENCE Result_Category_seq CACHE 20';
+103  -- Attempts
+104  drop_if_exists('table', 'Student_Attempt');
+105  execute immediate 'CREATE TABLE Student_Attempt
+106  (
+107    attempt_id         INTEGER NOT NULL,
+108    student_id         INTEGER NOT NULL,
+109    exam_id            INTEGER NOT NULL,
+110    semester_id        INTEGER NOT NULL,
+111    exam_dt_id         INTEGER NOT NULL,
+112    grade              INTEGER,
+113    result_category_id INTEGER,
+114    CONSTRAINT Student_Attempt_PK PRIMARY KEY (attempt_id),
+115    CONSTRAINT Student_Attempt_UK UNIQUE (student_id, exam_id, semester_id, exam_dt_id)
+116  )';
+117  drop_if_exists('sequence', 'Student_Attempt_seq');
+118  execute immediate 'CREATE SEQUENCE Student_Attempt_seq CACHE 20';
+119  -- Forein Keys
+120  drop_if_exists('constraint', 'Exam_FK1');
+121  execute immediate 'ALTER TABLE Exam ADD CONSTRAINT Exam_FK1 FOREIGN KEY (course_id) REFERENCES Course(course_id)';
+122  drop_if_exists('constraint', 'Student_Attempt_FK1');
+123  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK1 FOREIGN KEY (student_id) REFERENCES Student(student_id)';
+124  drop_if_exists('constraint', 'Student_Attempt_FK2');
+125  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK2 FOREIGN KEY (exam_id) REFERENCES Exam(exam_id)';
+126  drop_if_exists('constraint', 'Student_Attempt_FK3');
+127  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK3 FOREIGN KEY (semester_id) REFERENCES Semester(semester_id)';
+128  drop_if_exists('constraint', 'Student_Attempt_FK4');
+129  execute immediate 'ALTER TABLE Student_Attempt ADD CONSTRAINT Student_Attempt_FK4 FOREIGN KEY (exam_dt_id) REFERENCES Calendar(day_id)';
+130  end;
+131  /
+132  --Insert data
+133  BEGIN
+134    DELETE Result_Category;  
+135    COMMIT;
+136    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+137      VALUES(Result_Category_seq.nextval, 'Low');
+138    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+139      VALUES(Result_Category_seq.nextval, 'High');    
+140    INSERT INTO Result_Category(result_category_id, result_category_nm) 
+141      VALUES(Result_Category_seq.nextval, 'Fail');  
+142    COMMIT;      
+143  END;  
+144  /
+145  DECLARE
+146    l_st_dt DATE := to_date('2010/01/01','yyyy/mm/dd'); -- day to begin
+147    l_long  INTEGER := 5; -- 5 years
+148    l_count INTEGER;
+149  BEGIN
+150    DELETE Calendar;  
+151    COMMIT;
+152    l_count := add_months(l_st_dt, 12*l_long) - l_st_dt;
+153    FOR indx IN 0..l_count LOOP
+154      l_st_dt := l_st_dt + 1;
+155      INSERT INTO Calendar(day_id, dt, day_of_month, month_of_year, year_num)
+156        VALUES(Calendar_seq.nextval, l_st_dt, to_number(to_char(l_st_dt, 'dd')), to_number(to_char(l_st_dt, 'mm')), to_number(to_char(l_st_dt, 'yyyy')));
+157    END LOOP;  
+158    COMMIT;      
+159  END;  
+160  /
+161  BEGIN
+162    DELETE Semester;  
+163    COMMIT;
+164    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+165      VALUES(semester_seq.nextval, 'Autumn', to_date('2010/09/01','yyyy/mm/dd'), to_date('2010/12/24','yyyy/mm/dd')); 
+166    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+167      VALUES(semester_seq.nextval, 'Spring', to_date('2010/02/01','yyyy/mm/dd'), to_date('2010/05/25','yyyy/mm/dd'));
+168    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+169      VALUES(semester_seq.nextval, 'Autumn', to_date('2011/09/01','yyyy/mm/dd'), to_date('2011/12/24','yyyy/mm/dd')); 
+170    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+171      VALUES(semester_seq.nextval, 'Spring', to_date('2011/02/01','yyyy/mm/dd'), to_date('2011/05/25','yyyy/mm/dd'));        
+172    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+173      VALUES(semester_seq.nextval, 'Autumn', to_date('2012/09/01','yyyy/mm/dd'), to_date('2012/12/24','yyyy/mm/dd')); 
+174    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+175      VALUES(semester_seq.nextval, 'Spring', to_date('2012/02/01','yyyy/mm/dd'), to_date('2012/05/25','yyyy/mm/dd'));
+176    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+177      VALUES(semester_seq.nextval, 'Autumn', to_date('2013/09/01','yyyy/mm/dd'), to_date('2013/12/24','yyyy/mm/dd')); 
+178    INSERT INTO Semester(semester_id, semester_nm, start_dt, end_dt)
+179      VALUES(semester_seq.nextval, 'Spring', to_date('2013/02/01','yyyy/mm/dd'), to_date('2013/05/25','yyyy/mm/dd'));        
+180    COMMIT;      
+181  END;
+182  /
+183  BEGIN
+184    DELETE Course;  
+185    COMMIT;
+186    INSERT INTO Course(course_id, course_title)
+187      VALUES(course_seq.nextval, 'Data Analysis');   
+188    INSERT INTO Course(course_id, course_title)
+189      VALUES(course_seq.nextval, 'Design and Analysis of Algorithms');     
+190    INSERT INTO Course(course_id, course_title)
+191      VALUES(course_seq.nextval, 'Cryptography');  
+192    INSERT INTO Course(course_id, course_title)
+193      VALUES(course_seq.nextval, 'Human-Computer Interaction');  
+194    INSERT INTO Course(course_id, course_title)
+195      VALUES(course_seq.nextval, 'Compilers');  
+196    INSERT INTO Course(course_id, course_title)
+197      VALUES(course_seq.nextval, 'Introduction to Logic');  
+198    INSERT INTO Course(course_id, course_title)
+199      VALUES(course_seq.nextval, 'Machine Learning');  
+200    INSERT INTO Course(course_id, course_title)
+201      VALUES(course_seq.nextval, 'Natural Language Processing');  
+202    INSERT INTO Course(course_id, course_title)
+203      VALUES(course_seq.nextval, 'Game Theory');  
+204    INSERT INTO Course(course_id, course_title)
+205      VALUES(course_seq.nextval, 'Probabilistic Graphical Models');  
+206    INSERT INTO Course(course_id, course_title)
+207      VALUES(course_seq.nextval, 'Automata');       
+208    COMMIT;      
+209  END;
+210  /
+211  BEGIN
+212    DELETE exam;
+213    COMMIT;
+214    FOR rec IN (SELECT ROWNUM rn, c.* FROM Course c WHERE course_title NOT IN ('Automata')) LOOP    
+215      INSERT INTO Exam(exam_id, course_id, grade_type)
+216        VALUES(exam_seq.nextval, rec.course_id, CASE WHEN MOD(rec.rn, 2) = 0 THEN 'Y' ELSE 'N' END);
+217    END LOOP;  
+218    COMMIT;
+219  END;  
+220  /
+221  BEGIN
+222    DELETE Student;
+223    COMMIT;
+224    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+225      VALUES(student_seq.nextval, 'Cynthia', 'Bailey', NULL);
+226    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+227      VALUES(student_seq.nextval, 'Ricardo', 'Metcalfe', NULL);
+228    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+229      VALUES(student_seq.nextval, 'Marcin', 'Ostrowski', NULL);  
+230    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+231      VALUES(student_seq.nextval, 'Iris', 'Jones', NULL);
+232    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+233      VALUES(student_seq.nextval, 'Aziz', 'Abel', NULL);  
+234    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+235      VALUES(student_seq.nextval, 'Maria', 'Lai', NULL);
+236    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+237      VALUES(student_seq.nextval, 'Robert', 'Larue', NULL);
+238    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+239      VALUES(student_seq.nextval, 'William', 'Thomas', '4092 Maxwell Farm Road Arlington, VA 22201');
+240    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+241      VALUES(student_seq.nextval, 'Daniel', 'McCarthy', 'DanielMMcCarthy@teleworm.us');
+242    INSERT INTO Student(student_id, student_first_nm, student_last_nm, student_other_details)
+243      VALUES(student_seq.nextval, 'Cynthia', 'Riley', NULL);                                     
+244  END; 
+245  /
+246  BEGIN
+247    DELETE Student_attempt;
+248    COMMIT;
+249    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+250      VALUES(Student_attempt_seq.nextval, 
+251             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+252             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+253             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+254             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/18','yyyy/mm/dd')), 
+255             CASE 
+256               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+257                 THEN 40
+258                 ELSE NULL
+259             END, 
+260             CASE 
+261               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+262                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+263                 ELSE NULL
+264             END);
+265    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+266      VALUES(Student_attempt_seq.nextval, 
+267             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+268             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+269             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+270             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/19','yyyy/mm/dd')), 
+271             CASE 
+272               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+273                 THEN 50
+274                 ELSE NULL
+275             END, 
+276             CASE 
+277               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+278                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+279                 ELSE NULL
+280             END);     
+281    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+282      VALUES(Student_attempt_seq.nextval, 
+283             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Bailey'), 
+284             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+285             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+286             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+287             CASE 
+288               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+289                 THEN 60
+290                 ELSE NULL
+291             END, 
+292             CASE 
+293               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+294                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+295                 ELSE NULL
+296             END);          
+297    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+298      VALUES(Student_attempt_seq.nextval, 
+299             (SELECT student_id FROM Student WHERE student_first_nm = 'Cynthia' AND student_last_nm = 'Riley'), 
+300             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+301             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+302             (SELECT day_id from Calendar WHERE dt = to_date('2010/09/20','yyyy/mm/dd')), 
+303             CASE 
+304               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+305                 THEN 100
+306                 ELSE NULL
+307             END, 
+308             CASE 
+309               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+310                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+311                 ELSE NULL
+312             END);  
+313    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+314      VALUES(Student_attempt_seq.nextval, 
+315             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+316             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+317             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+318             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/28','yyyy/mm/dd')), 
+319             CASE 
+320               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+321                 THEN 70
+322                 ELSE NULL
+323             END, 
+324             CASE 
+325               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+326                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+327                 ELSE NULL
+328             END);
+329    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+330      VALUES(Student_attempt_seq.nextval, 
+331             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+332             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+333             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+334             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/29','yyyy/mm/dd')), 
+335             CASE 
+336               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+337                 THEN 70
+338                 ELSE NULL
+339             END, 
+340             CASE 
+341               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+342                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+343                 ELSE NULL
+344             END);     
+345    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+346      VALUES(Student_attempt_seq.nextval, 
+347             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+348             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+349             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+350             (SELECT day_id from Calendar WHERE dt = to_date('2010/10/30','yyyy/mm/dd')), 
+351             CASE 
+352               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+353                 THEN 80
+354                 ELSE NULL
+355             END, 
+356             CASE 
+357               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+358                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+359                 ELSE NULL
+360             END);          
+361    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+362      VALUES(Student_attempt_seq.nextval, 
+363             (SELECT student_id FROM Student WHERE student_first_nm = 'Ricardo'), 
+364             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis'),  
+365             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2010/09/01','yyyy/mm/dd')), 
+366             (SELECT day_id from Calendar WHERE dt = to_date('2010/11/15','yyyy/mm/dd')), 
+367             CASE 
+368               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'Y'
+369                 THEN 10
+370                 ELSE NULL
+371             END, 
+372             CASE 
+373               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Data Analysis') = 'N'
+374                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+375                 ELSE NULL
+376             END);   
+377    ------------
+378    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+379      VALUES(Student_attempt_seq.nextval, 
+380             (SELECT student_id FROM Student WHERE student_first_nm = 'Marcin'), 
+381             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms'),  
+382             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2010/02/01','yyyy/mm/dd')), 
+383             (SELECT day_id from Calendar WHERE dt = to_date('2010/03/15','yyyy/mm/dd')), 
+384             CASE 
+385               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'Y'
+386                 THEN 10
+387                 ELSE NULL
+388             END, 
+389             CASE 
+390               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Design and Analysis of Algorithms') = 'N'
+391                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+392                 ELSE NULL
+393             END);   
+394    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+395      VALUES(Student_attempt_seq.nextval, 
+396             (SELECT student_id FROM Student WHERE student_first_nm = 'Iris'), 
+397             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography'),  
+398             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2011/09/01','yyyy/mm/dd')), 
+399             (SELECT day_id from Calendar WHERE dt = to_date('2011/10/04','yyyy/mm/dd')), 
+400             CASE 
+401               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'Y'
+402                 THEN 100
+403                 ELSE NULL
+404             END, 
+405             CASE 
+406               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Cryptography') = 'N'
+407                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+408                 ELSE NULL
+409             END);          
+410    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+411      VALUES(Student_attempt_seq.nextval, 
+412             (SELECT student_id FROM Student WHERE student_first_nm = 'Aziz'), 
+413             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction'),  
+414             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2011/02/01','yyyy/mm/dd')), 
+415             (SELECT day_id from Calendar WHERE dt = to_date('2011/02/01','yyyy/mm/dd')), 
+416             CASE 
+417               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'Y'
+418                 THEN 50
+419                 ELSE NULL
+420             END, 
+421             CASE 
+422               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Human-Computer Interaction') = 'N'
+423                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Low')
+424                 ELSE NULL
+425             END);      
+426    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+427      VALUES(Student_attempt_seq.nextval, 
+428             (SELECT student_id FROM Student WHERE student_first_nm = 'Maria'), 
+429             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers'),  
+430             (SELECT semester_id FROM Semester WHERE semester_nm = 'Autumn' AND start_dt =  to_date('2012/09/01','yyyy/mm/dd')), 
+431             (SELECT day_id from Calendar WHERE dt = to_date('2012/12/24','yyyy/mm/dd')), 
+432             CASE 
+433               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'Y'
+434                 THEN 60
+435                 ELSE NULL
+436             END, 
+437             CASE 
+438               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Compilers') = 'N'
+439                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+440                 ELSE NULL
+441             END);     
+442    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+443      VALUES(Student_attempt_seq.nextval, 
+444             (SELECT student_id FROM Student WHERE student_first_nm = 'Robert'), 
+445             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic'),  
+446             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+447             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+448             CASE 
+449               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'Y'
+450                 THEN 90
+451                 ELSE NULL
+452             END, 
+453             CASE 
+454               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Introduction to Logic') = 'N'
+455                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+456                 ELSE NULL
+457             END);     
+458    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+459      VALUES(Student_attempt_seq.nextval, 
+460             (SELECT student_id FROM Student WHERE student_first_nm = 'William'), 
+461             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning'),  
+462             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2012/02/01','yyyy/mm/dd')), 
+463             (SELECT day_id from Calendar WHERE dt = to_date('2012/05/01','yyyy/mm/dd')), 
+464             CASE 
+465               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'Y'
+466                 THEN 100
+467                 ELSE NULL
+468             END, 
+469             CASE 
+470               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Machine Learning') = 'N'
+471                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+472                 ELSE NULL
+473             END);       
+474    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+475      VALUES(Student_attempt_seq.nextval, 
+476             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+477             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing'),  
+478             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+479             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/20','yyyy/mm/dd')), 
+480             CASE 
+481               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'Y'
+482                 THEN 10
+483                 ELSE NULL
+484             END, 
+485             CASE 
+486               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Natural Language Processing') = 'N'
+487                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'Fail')
+488                 ELSE NULL
+489             END); 
+490    INSERT INTO Student_attempt(attempt_id, student_id, exam_id, semester_id, exam_dt_id, grade, result_category_id) 
+491      VALUES(Student_attempt_seq.nextval, 
+492             (SELECT student_id FROM Student WHERE student_first_nm = 'Daniel'), 
+493             (SELECT exam_id FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory'),  
+494             (SELECT semester_id FROM Semester WHERE semester_nm = 'Spring' AND start_dt =  to_date('2013/02/01','yyyy/mm/dd')), 
+495             (SELECT day_id from Calendar WHERE dt = to_date('2013/03/21','yyyy/mm/dd')), 
+496             CASE 
+497               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'Y'
+498                 THEN 100
+499                 ELSE NULL
+500             END, 
+501             CASE 
+502               WHEN (SELECT grade_type FROM Exam e, Course c WHERE e.course_id = c.course_id AND course_title = 'Game Theory') = 'N'
+503                 THEN (SELECT result_category_id FROM Result_Category WHERE result_category_nm = 'High')
+504                 ELSE NULL
+505             END);                                                                                     
+506    COMMIT;
+507* END;
+
+Warning: Procedure created with compilation errors.
+
+SQL> cl buff
+buffer cleared
+SQL> @D:\Exams.sql
+
+Procedure created.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+
+PL/SQL procedure successfully completed.
+
+SQL> spool off

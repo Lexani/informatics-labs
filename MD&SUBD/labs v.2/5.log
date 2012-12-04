@@ -1,0 +1,609 @@
+SQL> -- 5.1
+SQL> select student_first_nm, student_last_nm from student where rownum < 6;
+
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+Cynthia                                                                         
+Bailey                                                                          
+                                                                                
+Ricardo                                                                         
+Metcalfe                                                                        
+                                                                                
+Marcin                                                                          
+Ostrowski                                                                       
+                                                                                
+
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+Iris                                                                            
+Jones                                                                           
+                                                                                
+Aziz                                                                            
+Abel                                                                            
+                                                                                
+
+SQL> -- 5.2
+SQL> SELECT *
+  2  FROM
+  3  (
+  4   SELECT s.student_last_nm last_name, count(sa.student_id) exam_count
+  5   FROM student s, student_attempt sa
+  6   WHERE s.student_id = sa.student_id
+  7   GROUP BY s.student_last_nm
+  8   ORDER BY exam_count DESC
+  9  )
+ 10  WHERE rownum <= 5;
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+EXAM_COUNT                                                                      
+----------                                                                      
+Ostrowski                                                                       
+         4                                                                      
+                                                                                
+Bailey                                                                          
+         3                                                                      
+                                                                                
+McCarthy                                                                        
+         2                                                                      
+                                                                                
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+EXAM_COUNT                                                                      
+----------                                                                      
+Riley                                                                           
+         1                                                                      
+                                                                                
+Larue                                                                           
+         1                                                                      
+                                                                                
+
+SQL> -- 5.3
+SQL> -- the first way
+SQL> SELECT *
+  2  FROM
+  3  (
+  4   SELECT s.student_last_nm last_name, count(sa.student_id) exam_count
+  5   FROM student s, student_attempt sa
+  6   WHERE s.student_id = sa.student_id
+  7   GROUP BY s.student_last_nm
+  8   ORDER BY exam_count DESC
+  9  )
+ 10  WHERE rownum = 1;
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+EXAM_COUNT                                                                      
+----------                                                                      
+Ostrowski                                                                       
+         4                                                                      
+                                                                                
+
+SQL> -- the second way
+SQL> SELECT s.student_last_nm last_name, sa.rank
+  2  FROM
+  3  (
+  4   SELECT
+  5     student_id id,
+  6     rank() over (ORDER BY count(student_id) DESC) rank
+  7   FROM student_attempt
+  8   GROUP BY student_id
+  9  ) sa
+ 10  INNER JOIN student s
+ 11  ON sa.id = s.student_id AND sa.rank = 1;
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+      RANK                                                                      
+----------                                                                      
+Ostrowski                                                                       
+         1                                                                      
+                                                                                
+
+SQL> -- 5.4
+SQL> SELECT
+  2   to_char(to_date(m_ec.month, 'MM'), 'Month', 'NLS_DATE_LANGUAGE=AMERICAN') month
+  3  FROM
+  4  (
+  5   SELECT c.month_of_year month, count(c.month_of_year) exam_count
+  6   FROM calendar c
+  7   INNER JOIN student_attempt sa
+  8   ON c.day_id = sa.exam_dt_id
+  9   GROUP BY c.month_of_year
+ 10  ) m_ec
+ 11  WHERE m_ec.exam_count > 3;
+
+MONTH                                                                           
+------------------------------------                                            
+September                                                                       
+October                                                                         
+
+SQL> -- 5.5
+SQL> SELECT ce.title, ce.grade
+  2  FROM
+  3  (
+  4   SELECT rank() over (ORDER BY sa.grade DESC NULLS LAST) rank,
+  5     c.course_title title, sa.grade grade
+  6   FROM student_attempt sa
+  7   INNER JOIN course c
+  8   ON sa.exam_id = c.course_id AND sa.grade IS NOT NULL
+  9  ) ce
+ 10  WHERE ce.rank = 1;
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+     GRADE                                                                      
+----------                                                                      
+Introduction to Logic                                                           
+        90                                                                      
+                                                                                
+
+SQL> -- 5.6
+SQL> SELECT
+  2   c.course_title title,
+  3   nvl(to_char(max(sa.grade)), 'N/A') max,
+  4   nvl(to_char(min(sa.grade)), 'N/A') min,
+  5   nvl(to_char(avg(sa.grade)), 'N/A') avg
+  6  FROM student_attempt sa
+  7  INNER JOIN course c
+  8  ON sa.exam_id = c.course_id
+  9  GROUP BY c.course_title;
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Design and Analysis of Algorithms                                               
+10                                                                              
+10                                                                              
+10                                                                              
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Natural Language Processing                                                     
+10                                                                              
+10                                                                              
+10                                                                              
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Cryptography                                                                    
+N/A                                                                             
+N/A                                                                             
+N/A                                                                             
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Machine Learning                                                                
+N/A                                                                             
+N/A                                                                             
+N/A                                                                             
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Data Analysis                                                                   
+N/A                                                                             
+N/A                                                                             
+N/A                                                                             
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Human-Computer Interaction                                                      
+50                                                                              
+50                                                                              
+50                                                                              
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Compilers                                                                       
+N/A                                                                             
+N/A                                                                             
+N/A                                                                             
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Introduction to Logic                                                           
+90                                                                              
+90                                                                              
+90                                                                              
+                                                                                
+
+TITLE                                                                           
+--------------------------------------------------------------------------------
+MAX                                                                             
+----------------------------------------                                        
+MIN                                                                             
+----------------------------------------                                        
+AVG                                                                             
+----------------------------------------                                        
+Game Theory                                                                     
+N/A                                                                             
+N/A                                                                             
+N/A                                                                             
+                                                                                
+
+9 rows selected.
+
+SQL> -- 5.7
+SQL> SELECT count(course_id) course_count FROM course;
+
+COURSE_COUNT                                                                    
+------------                                                                    
+          11                                                                    
+
+SQL> -- 5.8
+SQL> SELECT student_first_nm first_name, student_last_nm last_name
+  2  FROM student
+  3  WHERE student_first_nm
+  4  IN
+  5  (
+  6   SELECT student_first_nm
+  7   FROM student
+  8   GROUP BY student_first_nm
+  9   HAVING count(*) > 1
+ 10  );
+
+FIRST_NAME                                                                      
+--------------------------------------------------------------------------------
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+Cynthia                                                                         
+Riley                                                                           
+                                                                                
+Cynthia                                                                         
+Bailey                                                                          
+                                                                                
+
+SQL> -- 5.9
+SQL> CREATE VIEW stats_view AS
+  2   SELECT exam_id eid, student_id sid, count(*) count
+  3   FROM student_attempt
+  4   GROUP BY exam_id, student_id;
+
+View created.
+
+SQL> 
+SQL> SELECT s.student_last_nm last_name, stats.eid exam, stats.cnt cnt
+  2  FROM
+  3  (
+  4   SELECT v1.eid eid, v1.sid sid, v1.count cnt FROM stats_view v1
+  5   INNER JOIN stats_view v2
+  6   ON v1.eid = v2.eid AND v1.count = v2.count AND v1.sid <> v2.sid
+  7   ORDER BY 3 DESC
+  8  ) stats
+  9  INNER JOIN student s
+ 10  ON s.student_id = stats.sid;
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+      EXAM        CNT                                                           
+---------- ----------                                                           
+Bailey                                                                          
+         1          3                                                           
+                                                                                
+Ostrowski                                                                       
+         1          3                                                           
+                                                                                
+Metcalfe                                                                        
+         1          1                                                           
+                                                                                
+
+LAST_NAME                                                                       
+--------------------------------------------------------------------------------
+      EXAM        CNT                                                           
+---------- ----------                                                           
+Riley                                                                           
+         1          1                                                           
+                                                                                
+
+SQL> 
+SQL> DROP VIEW stats_view
+  2  ;
+
+View dropped.
+
+SQL> -- 5.10
+SQL> SELECT s.semester_nm name, s.start_dt startt, s.end_dt end
+  2  FROM
+  3  (
+  4   SELECT
+  5     semester_id semester_id,
+  6     rank() over (ORDER BY count(semester_id)) rank
+  7   FROM student_attempt
+  8   GROUP BY semester_id
+  9  ) sa
+ 10  INNER JOIN semester s
+ 11  USING (semester_id)
+ 12  WHERE rank = 1
+ 13  ORDER BY rank;
+
+NAME                                                                            
+--------------------------------------------------------------------------------
+STARTT   END                                                                    
+-------- --------                                                               
+Spring                                                                          
+01.02.10 25.05.10                                                               
+                                                                                
+Autumn                                                                          
+01.09.11 24.12.11                                                               
+                                                                                
+Spring                                                                          
+01.02.11 25.05.11                                                               
+                                                                                
+
+NAME                                                                            
+--------------------------------------------------------------------------------
+STARTT   END                                                                    
+-------- --------                                                               
+Autumn                                                                          
+01.09.12 24.12.12                                                               
+                                                                                
+
+SQL> -- 5.11
+SQL> SELECT student_last_nm, grade
+  2  FROM
+  3  (
+  4   SELECT student_id, max(grade) grade
+  5   FROM student_attempt
+  6   GROUP BY student_id
+  7  )
+  8  INNER JOIN student
+  9  USING (student_id);
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+     GRADE                                                                      
+----------                                                                      
+Bailey                                                                          
+                                                                                
+                                                                                
+Metcalfe                                                                        
+                                                                                
+                                                                                
+Ostrowski                                                                       
+        10                                                                      
+                                                                                
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+     GRADE                                                                      
+----------                                                                      
+Jones                                                                           
+                                                                                
+                                                                                
+Abel                                                                            
+        50                                                                      
+                                                                                
+Lai                                                                             
+                                                                                
+                                                                                
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+     GRADE                                                                      
+----------                                                                      
+Larue                                                                           
+        90                                                                      
+                                                                                
+Thomas                                                                          
+                                                                                
+                                                                                
+McCarthy                                                                        
+        10                                                                      
+                                                                                
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+     GRADE                                                                      
+----------                                                                      
+Riley                                                                           
+                                                                                
+                                                                                
+
+10 rows selected.
+
+SQL> -- 5.12
+SQL> -- number of exam attempts for the year
+-- SQL> SELECT c.year_num year, count(*) ex_cnt
+--   2  FROM student_attempt sa
+--   3  INNER JOIN calendar c
+--   4  ON sa.exam_dt_id = c.day_id
+--   5  WHERE c.dt <= sysdate and c.dt >= add_months(sysdate, -12);
+
+--   COUNT(*)                                                                      
+-- ----------                                                                      
+--          2                                                                      
+
+-- SQL> -- number of exam attempts for the month
+-- SQL> SELECT count(*)
+--   2  FROM student_attempt sa
+--   3  INNER JOIN calendar c
+--   4  ON sa.exam_dt_id = c.day_id
+--   5  WHERE c.dt <= sysdate and c.dt >= add_months(sysdate, -1);
+
+--   COUNT(*)                                                                      
+-- ----------                                                                      
+--          0                                                                      
+SELECT count(attempt_id) exam_count FROM student_attempt;
+
+SELECT cs.year, count(cs.attempt_id) exam_count FROM
+(
+  SELECT c.year_num year, sa.*
+  FROM student_attempt sa
+  INNER JOIN calendar c
+  ON sa.exam_dt_id = c.day_id
+) cs
+GROUP BY cs.year
+ORDER BY cs.year
+;
+
+SELECT cs.month, count(cs.attempt_id) exam_count FROM
+(
+  SELECT c.month_of_year month, sa.*
+  FROM student_attempt sa
+  INNER JOIN calendar c
+  ON sa.exam_dt_id = c.day_id
+) cs
+GROUP BY cs.month
+ORDER BY cs.month
+;
+SQL> -- 5.13
+SQL> -- year
+SQL> SELECT s.student_last_nm, sa_calendar.grade, sa_calendar.dt, rownum N
+  2  FROM
+  3  (
+  4   SELECT *
+  5   FROM student_attempt sa
+  6   INNER JOIN calendar c
+  7   ON sa.exam_dt_id = c.day_id
+  8   WHERE c.dt <= sysdate and c.dt >= add_months(sysdate, -12)
+  9  ) sa_calendar
+ 10  INNER JOIN student s
+ 11  USING (student_id);
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+     GRADE DT                N                                                  
+---------- -------- ----------                                                  
+Thomas                                                                          
+           01.05.12          1                                                  
+                                                                                
+Larue                                                                           
+        90 01.05.12          2                                                  
+                                                                                
+
+SQL> -- month
+SQL> SELECT s.student_last_nm, sa_calendar.grade, sa_calendar.dt, rownum N
+  2  FROM
+  3  (
+  4   SELECT *
+  5   FROM student_attempt sa
+  6   INNER JOIN calendar c
+  7   ON sa.exam_dt_id = c.day_id
+  8   WHERE c.dt <= sysdate and c.dt >= add_months(sysdate, -1)
+  9  ) sa_calendar
+ 10  INNER JOIN student s
+ 11  USING (student_id);
+
+no rows selected
+
+SQL> -- 5.14
+SQL> SELECT s.student_last_nm name
+  2  FROM student s
+  3  LEFT JOIN
+  4  (
+  5   SELECT student_id, max(grade) max_grade FROM student_attempt
+  6   GROUP BY student_id
+  7  ) sa
+  8  USING (student_id)
+  9  WHERE sa.max_grade IS NULL;
+
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+Bailey                                                                          
+Lai                                                                             
+Metcalfe                                                                        
+Jones                                                                           
+Thomas                                                                          
+Riley                                                                           
+
+6 rows selected.
+
+SQL> -- 5.15
+SQL> SELECT * FROM result_category;
+
+RESULT_CATEGORY_ID                                                              
+------------------                                                              
+RESULT_CATEGORY_NM                                                              
+--------------------------------------------------------------------------------
+                 1                                                              
+Low                                                                             
+                                                                                
+                 2                                                              
+High                                                                            
+                                                                                
+                 3                                                              
+Fail                                                                            
+                                                                                
+
+SQL> SELECT c.course_title course_title
+  2  from course c
+  3  INNER JOIN
+  4  (
+  5   SELECT exam_id, max(result_category_id) result FROM student_attempt
+  6   GROUP BY exam_id
+  7  ) sa
+  8  ON c.course_id = sa.exam_id
+  9  WHERE sa.result <> 3 OR sa.result IS NULL;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+Introduction to Logic                                                           
+Design and Analysis of Algorithms                                               
+Human-Computer Interaction                                                      
+Natural Language Processing                                                     
+Cryptography                                                                    
+Machine Learning                                                                
+Game Theory                                                                     
+
+7 rows selected.
+
+SQL> spool off

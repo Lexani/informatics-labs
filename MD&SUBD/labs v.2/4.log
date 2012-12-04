@@ -1,0 +1,219 @@
+SQL> -- 4.1
+SQL> SELECT student_first_nm, student_other_details FROM student
+  2  WHERE NOT REGEXP_LIKE(student_other_details, '[0-9]');
+
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+STUDENT_OTHER_DETAILS                                                           
+--------------------------------------------------------------------------------
+Daniel                                                                          
+DanielMMcCarthy@teleworm.us                                                     
+                                                                                
+
+SQL> -- 4.2
+SQL> SELECT course_title FROM course
+  2  WHERE instr(lower(course_title), 'a') > 0;
+
+COURSE_TITLE                                                                    
+--------------------------------------------------------------------------------
+Data Analysis                                                                   
+Design and Analysis of Algorithms                                               
+Cryptography                                                                    
+Human-Computer Interaction                                                      
+Machine Learning                                                                
+Natural Language Processing                                                     
+Game Theory                                                                     
+Probabilistic Graphical Models                                                  
+Automata                                                                        
+
+9 rows selected.
+
+SQL> -- 4.3
+SQL> SELECT ltrim(substr(course_title,
+  2  	instr(course_title, ' '),
+  3  	instr(course_title, ' ', 1, 2) - instr(course_title, ' '))) second_word
+  4  FROM course;
+
+SECOND_WORD                                                                     
+--------------------------------------------------------------------------------
+                                                                                
+and                                                                             
+                                                                                
+                                                                                
+                                                                                
+to                                                                              
+                                                                                
+Language                                                                        
+                                                                                
+Graphical                                                                       
+                                                                                
+
+11 rows selected.
+
+SQL> -- 4.4
+SQL> SELECT ltrim(substr(course_title,
+  2  	instr(course_title, ' ', -1, 2),
+  3  	instr(course_title, ' ', -1) - instr(course_title, ' ', -1, 2))) penultimate_word
+  4  FROM course;
+
+PENULTIMATE_WORD                                                                
+--------------------------------------------------------------------------------
+Data                                                                            
+of                                                                              
+                                                                                
+Human-Computer                                                                  
+                                                                                
+to                                                                              
+Machine                                                                         
+Language                                                                        
+Game                                                                            
+Graphical                                                                       
+                                                                                
+
+11 rows selected.
+
+SQL> -- 4.5
+SQL> SELECT nvl(student_other_details, 'None')
+  2  FROM student;
+
+NVL(STUDENT_OTHER_DETAILS,'NONE')                                               
+--------------------------------------------------------------------------------
+None                                                                            
+None                                                                            
+None                                                                            
+None                                                                            
+None                                                                            
+None                                                                            
+None                                                                            
+4092 Maxwell Farm Road Arlington, VA 22201                                      
+DanielMMcCarthy@teleworm.us                                                     
+None                                                                            
+
+10 rows selected.
+
+SQL> -- 4.6
+SQL> SELECT nvl2(student_other_details, 'Some details', 'None') student_data
+  2  FROM student;
+
+STUDENT_DATA                                                                    
+------------                                                                    
+None                                                                    
+None                                                                    
+None                                                                    
+None                                                                    
+None                                                                    
+None                                                                    
+None                                                                    
+Some details                                                                           
+Some details                                                                            
+None                                                                    
+
+10 rows selected.
+
+SQL> -- 4.7
+SQL> SELECT coalesce(to_char(sa.grade), s.student_other_details, to_char(sa.semester_id)) vals
+  2  FROM student_attempt sa, student s
+  3  WHERE sa.student_id = s.student_id;
+
+VALS                                                                            
+--------------------------------------------------------------------------------
+1                                                                               
+1                                                                               
+1                                                                               
+1                                                                               
+1                                                                               
+1                                                                               
+1                                                                               
+1                                                                               
+10                                                                              
+3                                                                               
+50                                                                              
+
+VALS                                                                            
+--------------------------------------------------------------------------------
+5                                                                               
+90                                                                              
+4092 Maxwell Farm Road Arlington, VA 22201                                      
+10                                                                              
+DanielMMcCarthy@teleworm.us                                                     
+
+16 rows selected.
+
+SQL> -- 4.8
+SQL> SELECT to_char((add_months(c.dt, 12) + 1), 'DY', 'NLS_DATE_LANGUAGE=AMERICAN') edt_plus, c.dt as edt
+  2  FROM student_attempt sa, calendar c
+  3  WHERE sa.exam_dt_id = c.day_id;
+
+EDT_PLUS     EDT                                                                
+------------ --------                                                           
+WED          15.03.10                                                           
+MON          18.09.10                                                           
+TUE          19.09.10                                                           
+WED          20.09.10                                                           
+WED          20.09.10                                                           
+SAT          28.10.10                                                           
+SUN          29.10.10                                                           
+MON          30.10.10                                                           
+WED          15.11.10                                                           
+THU          01.02.11                                                           
+FRI          04.10.11                                                           
+
+EDT_PLUS     EDT                                                                
+------------ --------                                                           
+THU          01.05.12                                                           
+THU          01.05.12                                                           
+WED          24.12.12                                                           
+FRI          20.03.13                                                           
+SAT          21.03.13                                                           
+
+16 rows selected.
+
+SQL> -- 4.9
+SQL> SELECT to_char((c.dt - sysdate), '9999S') as days
+  2  FROM student_attempt sa, calendar c, dual
+  3  WHERE sa.exam_dt_id = c.day_id;
+
+DAYS                                                                            
+-----                                                                           
+ 960-                                                                           
+ 773-                                                                           
+ 772-                                                                           
+ 771-                                                                           
+ 771-                                                                           
+ 733-                                                                           
+ 732-                                                                           
+ 731-                                                                           
+ 715-                                                                           
+ 637-                                                                           
+ 392-                                                                           
+
+DAYS                                                                            
+-----                                                                           
+ 182-                                                                           
+ 182-                                                                           
+  55+                                                                           
+ 141+                                                                           
+ 142+                                                                           
+
+16 rows selected.
+
+SQL> -- 4.10
+SQL> SELECT DISTINCT to_char(c.dt, 'MON-YYYY', 'NLS_DATE_LANGUAGE=AMERICAN') month, to_char(last_day(c.dt), 'DD') ld
+  2  FROM student_attempt sa, calendar c
+  3  WHERE sa.exam_dt_id = c.day_id;
+
+MONTH             LD                                                            
+----------------- --                                                            
+SEP-2010          30                                                            
+NOV-2010          30                                                            
+MAR-2010          31                                                            
+FEB-2011          28                                                            
+MAY-2012          31                                                            
+DEC-2012          31                                                            
+OCT-2010          31                                                            
+MAR-2013          31                                                            
+OCT-2011          31                                                            
+
+9 rows selected.
+
+SQL> spool off

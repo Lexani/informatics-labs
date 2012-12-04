@@ -1,0 +1,168 @@
+SQL> connect dmitry@xe
+Connected.
+SQL> ALTER TABLE student ADD (upd_dt DATE, ssn varchar2(50) DEFAULT 'ssn default');
+
+Table altered.
+
+--	2.2
+SQL> UPDATE student SET upd_dt = TO_DATE('15-NOV-1991');
+
+10 rows updated.
+
+--	2.3
+SQL> UPDATE student SET ssn = 'N/A' WHERE student_other_details IS NULL;
+
+8 rows updated.
+
+SQL> select upd_dt, ssn, student_last_nm FROM student;
+
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+15-NOV-91 N/A                                                                   
+Bailey                                                                          
+                                                                                
+15-NOV-91 N/A                                                                   
+Metcalfe                                                                        
+                                                                                
+15-NOV-91 N/A                                                                   
+Ostrowski                                                                       
+                                                                                
+
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+15-NOV-91 N/A                                                                   
+Jones                                                                           
+                                                                                
+15-NOV-91 N/A                                                                   
+Abel                                                                            
+                                                                                
+15-NOV-91 N/A                                                                   
+Lai                                                                             
+                                                                                
+
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+15-NOV-91 N/A                                                                   
+Larue                                                                           
+                                                                                
+15-NOV-91 ssn default                                                           
+Thomas                                                                          
+                                                                                
+15-NOV-91 ssn default                                                           
+McCarthy                                                                        
+                                                                                
+
+UPD_DT    SSN                                                                   
+--------- --------------------------------------------------                    
+STUDENT_LAST_NM                                                                 
+--------------------------------------------------------------------------------
+15-NOV-91 N/A                                                                   
+Riley                                                                           
+                                                                                
+
+10 rows selected.
+
+--	2.4
+SQL> INSERT INTO student (student_id, student_first_nm, student_last_nm, student_other_details, upd_dt, ssn) VALUES (student_seq.nextval, 'Dmitry', 'Linov', NULL, TO_DATE('07-OCT-12'), 'N/A');
+
+1 row created.
+
+--	2.5
+SQL> UPDATE student SET student_other_details = (SELECT student_other_details FROM student WHERE student_first_nm = 'William' AND student_last_nm = 'Thomas') WHERE student_first_nm = 'Dmitry' AND student_last_nm = 'Linov';
+
+1 row updated.
+
+--	2.6
+SQL> DELETE FROM mystudent WHERE student_first_nm = 'Dmitry' AND student_last_nm = 'Linov';
+DELETE FROM mystudent WHERE student_first_nm = 'Dmitry' AND student_last_nm = 'Linov'
+            *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> DELETE FROM student WHERE student_first_nm = 'Dmitry' AND student_last_nm = 'Linov';
+
+1 row deleted.
+
+SQL> COMMIT;
+
+Commit complete.
+
+--	2.7
+SQL> MERGE INTO student
+  2  USING dual ON (student.student_first_nm = 'Li')
+  3  WHEN MATCHED THEN UPDATE SET student.ssn = '271-14-9646'
+  4  WHEN NOT MATCHED THEN INSERT (student.student_id, student.student_first_nm, student.student_last_nm, student.ssn) VALUES (student_seq.nextval, 'Li', 'Tai', '271-14-9646');
+
+1 row merged.
+
+--	2.8
+SQL> SELECT student_first_nm FROM student;
+
+STUDENT_FIRST_NM                                                                
+--------------------------------------------------------------------------------
+Li                                                                              
+Cynthia                                                                         
+Ricardo                                                                         
+Marcin                                                                          
+Iris                                                                            
+Aziz                                                                            
+Maria                                                                           
+Robert                                                                          
+William                                                                         
+Daniel                                                                          
+Cynthia                                                                         
+
+11 rows selected.
+
+SQL> DELETE FROM student;
+DELETE FROM student
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (DMITRY.STUDENT_ATTEMPT_FK1) violated - child 
+record found 
+
+
+SQL> ALTER TABLE student disable constraint DMITRY.STUDENT_ATTEMPT_FK1;
+ALTER TABLE student disable constraint DMITRY.STUDENT_ATTEMPT_FK1
+                                             *
+ERROR at line 1:
+ORA-00933: SQL command not properly ended 
+
+
+SQL> ALTER TABLE dmitry disable constraint STUDENT_ATTEMPT_FK1;
+ALTER TABLE dmitry disable constraint STUDENT_ATTEMPT_FK1
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> CREATE TABLE mystudent AS SELECT * FROM student;
+
+Table created.
+
+SQL> DELETE FROM mystudent;
+
+11 rows deleted.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> SELECT COUNT(*) FROM mystudent;
+
+  COUNT(*)                                                                      
+----------                                                                      
+        11                                                                      
+
+SQL> DROP TABLE mystudent;
+
+Table dropped.
+
+SQL> spool off;
